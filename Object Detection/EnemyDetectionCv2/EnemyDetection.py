@@ -21,18 +21,20 @@ class EnemyDetection:
         # Load the video stream
         self.camera = cv2.VideoCapture(video_input)
 
-    def GetImage(self) -> np.ndarray:
+    def get_image(self) -> np.ndarray:
         """
         Getting image frame from camera
-        returns -> frame 
+        Returns:
+            frame (np.ndarray): the current frame 
         """
 
         # Read a frame from the video stream
         ret, frame = self.camera.read()
         return frame
 
-    def GetPeopleFromImage(self, frame: np.ndarray) -> Tuple:
+    def get_people_from_image(self, frame: np.ndarray) -> Tuple:
         """
+        Gets people tuple from the image
         Args:
             frame (np.ndarray): the current frame
 
@@ -49,10 +51,11 @@ class EnemyDetection:
         # Run forward pass to get the detections
         detections = self.model.forward()
 
-        return self.GetPeopleFromDetections(detections, frame)
+        return self.get_people_from_detection(detections, frame)
         
-    def GetPeopleFromDetections(self, detections: np.ndarray, frame: np.ndarray) -> Tuple:
+    def get_people_from_detection(self, detections: np.ndarray, frame: np.ndarray) -> Tuple:
         """
+        Gets people tulpe from detection
         Args:
             detections (np.ndarray): the detections from the model
             frame (np.ndarray): the current frame

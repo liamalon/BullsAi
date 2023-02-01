@@ -9,8 +9,9 @@ class EnemyTargeting:
     def __init__(self, step_size:int):
         self.step_size = step_size
 
-    def GetCenterOfPeople(self, people: Tuple):
+    def get_center_of_people(self, people: Tuple):
         """
+        Gets the center of the people
         Args:
             people (Tuple): a tuple containing
             (top left x, top left y, width, height, confidence)
@@ -28,8 +29,9 @@ class EnemyTargeting:
         # Return center tuple
         return (x, y)
     
-    def GetStepsToCenter(self, current_x:int, current_y:int, people: Tuple):
+    def get_steps_to_people_center(self, current_x:int, current_y:int, people: Tuple):
         """
+        Gets the steps to the people center
         Args:
             current_x (int): the current x of the target (usually the x of center of the frame at the moment)
             current_y (int): the current y of the target (usually the y of center of the frame at the moment)

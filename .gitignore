@@ -3,3 +3,6 @@ venv/
 
 #ignore cam dir
 cam/
+
+#ignore labelImg
+labelImg/

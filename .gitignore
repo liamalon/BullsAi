@@ -1,0 +1,5 @@
+#ignore venv dir
+venv/
+
+#ignore cam dir
+cam/

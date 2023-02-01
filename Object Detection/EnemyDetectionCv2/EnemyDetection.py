@@ -65,14 +65,18 @@ class EnemyDetection:
         # Loop over the detections
         for people in range(detections.shape[2]):
             confidence = detections[0, 0, people, 2]
-            if confidence > 0.8:
+            if confidence > 0.9:
                 # Get the x, y, w, h for the detection
                 x = int(detections[0, 0, people, 3] * frame.shape[1])
                 y = int(detections[0, 0, people, 4] * frame.shape[0])
                 w = int(detections[0, 0, people, 5] * frame.shape[1])
                 h = int(detections[0, 0, people, 6] * frame.shape[0])
                 #print(f"Person in: {x, w, y, h}")
-                people.append([x, w, y, h])
+                people.append([x, w, y, h, confidence])
+            
+        if len(people) != 0:
+            return sorted(people, key = lambda x: x[-1], reverse=True)[0]
+        
         return people
     
 

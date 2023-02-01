@@ -1,5 +1,5 @@
 from typing import Tuple
-import numpy as np
+
 class EnemyTargeting:
     """
     EnemyTargeting is a class that is in charge
@@ -20,32 +20,41 @@ class EnemyTargeting:
         """
 
         # Finding the X of the center
-        x = int(np.average([people[0], people[2]]))
+        x = people[0] + people[2] // 2
 
         # Finding the Y of the center 
-        y = int(np.average([people[1], people[3]]))
+        y = people[1] + people[3] // 2
 
         # Return center tuple
         return (x, y)
     
-    def CenterTarget(self, current_x:int, current_y:int, people: Tuple):
+    def GetStepsToCenter(self, current_x:int, current_y:int, people: Tuple):
         """
         Args:
-            current_x (int): the current x of the target
-            current_y (int): the current y of the target
-        
+            current_x (int): the current x of the target (usually the x of center of the frame at the moment)
+            current_y (int): the current y of the target (usually the y of center of the frame at the moment)
+            people (tuple(x, y, w, h, confidence)): all the boxes and locations
+            of people in the frame 
         Returns:
             steps (tuple): a tuple that contains num of steps for each diraction
             horizontal (int): if positive to the left if negetive to the right
-            vertical (int): if positive up if negetive down
+            vertical (int): if positive down if negetive up
             (horizontal, vertical)
         """
 
         # New target location
-        center = self.GetCenterOfPeople(people)
+        new_center_x, new_center_y = self.GetCenterOfPeople(people)
 
-        # TODO: current_xy - center // num_steps
-
+        # Calculate the distance between the two points
+        distance_x = new_center_x - current_x
+        distance_y = new_center_y - current_y
+        
+        # Calculate the number of steps in each exis
+        num_steps_x = distance_x // self.step_size
+        num_steps_y = distance_y // self.step_size
+ 
+        # Return the number of staps in each axis 
+        return (num_steps_x, num_steps_y) 
 
 
 

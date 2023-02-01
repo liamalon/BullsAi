@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from typing import List, Tuple
+from typing import Tuple
 
 class EnemyDetection:
     """
@@ -31,14 +31,14 @@ class EnemyDetection:
         ret, frame = self.camera.read()
         return frame
 
-    def GetPeopleFromImage(self, frame: np.ndarray):
+    def GetPeopleFromImage(self, frame: np.ndarray) -> Tuple:
         """
         Args:
             frame (np.ndarray): the current frame
 
         Returns:
             Returns:
-                people list[(x, y, w, h)]: all the boxes and locations
+                people tuple(x, y, w, h, confidence): all the boxes and locations
                 of people in the frame 
         """
 
@@ -51,14 +51,14 @@ class EnemyDetection:
 
         return self.GetPeopleFromDetections(detections, frame)
         
-    def GetPeopleFromDetections(self, detections: np.ndarray, frame: np.ndarray) -> List[Tuple]:
+    def GetPeopleFromDetections(self, detections: np.ndarray, frame: np.ndarray) -> Tuple:
         """
         Args:
             detections (np.ndarray): the detections from the model
             frame (np.ndarray): the current frame
         
         Returns:
-            people list[(x, y, w, h)]: all the boxes and locations
+            people tuple(x, y, w, h, confidence): all the boxes and locations
             of people in the frame 
         """
         people = []

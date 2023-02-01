@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 
-os.chdir(r"G:\Final Project\Auto Aim Nerf\Object Detection\EnemyDetectionCv2\RaspberryPi4Cv2")
+os.chdir(r"G:\Final Project\Auto Aim Nerf\Object Detection\EnemyDetectionCv2\Models")
 # Load the pre-trained model for person detection
 net = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt', 'MobileNetSSD_deploy.caffemodel')
 

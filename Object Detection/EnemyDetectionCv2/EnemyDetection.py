@@ -16,7 +16,7 @@ class EnemyDetection:
         """
 
         # Load the pre-trained model for person detection
-        self.model = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt', 'MobileNetSSD_deploy.caffemodel')
+        self.model = cv2.dnn.readNetFromCaffe('Models\\MobileNetSSD_deploy.prototxt', 'Models\\MobileNetSSD_deploy.caffemodel')
 
         # Load the video stream
         self.camera = cv2.VideoCapture(video_input)

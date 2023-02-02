@@ -1,5 +1,5 @@
 from typing import Tuple
-
+import numpy as np
 class EnemyTargeting:
     """
     EnemyTargeting is a class that is in charge
@@ -14,17 +14,17 @@ class EnemyTargeting:
         Gets the center of the people
         Args:
             people (Tuple): a tuple containing
-            (top left x, top left y, width, height, confidence)
+            (top left x, top left y, buttom right x, buttom right y, confidence)
         
         Returns:
             center (tuple): a tuple of (center x, center y)
         """
 
         # Finding the X of the center
-        x = people[0] + people[2] // 2
+        x = np.average([people[0], people[2]]).astype(int)
 
         # Finding the Y of the center 
-        y = people[1] + people[3] // 2
+        y = np.average([people[1], people[3]]).astype(int)
 
         # Return center tuple
         return (x, y)

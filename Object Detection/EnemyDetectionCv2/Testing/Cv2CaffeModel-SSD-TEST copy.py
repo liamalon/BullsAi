@@ -4,10 +4,10 @@ import os
 
 os.chdir(r"G:\Final Project\Auto Aim Nerf\Object Detection\EnemyDetectionCv2\Models")
 # Load the pre-trained model for person detection
-net = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt', 'MobileNetSSD_deploy.caffemodel')
+net = cv2.dnn.readNetFromCaffe('..\\Models\\MobileNetSSD_deploy.prototxt', '..\\Models\\MobileNetSSD_deploy.caffemodel')
 
 # Load the video stream
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while True:
     # Read a frame from the video stream
@@ -31,24 +31,7 @@ while True:
                 w = int(detections[0, 0, i, 5] * frame.shape[1])
                 h = int(detections[0, 0, i, 6] * frame.shape[0])
 
-                # Get the person ROI
-                person = frame[y:w, x:h]
-                print( x, y, w, h)
-                
-                # Convert the person ROI to HSV color space
-                hsv = cv2.cvtColor(person, cv2.COLOR_BGR2HSV)
-
-                # Define the lower and upper bounds for red color
-                lower_red = np.array([0, 0, 90])
-                upper_red = np.array([50, 0, 255])
-
-                # Threshold the HSV image to get only red color
-                mask = cv2.inRange(hsv, lower_red, upper_red)
-
-                # Check if the person is wearing a red shirt
-                if cv2.countNonZero(mask) > 0:
-                    # Draw a bounding box around the person
-                    cv2.rectangle(frame, (x, y), (w, h), (0, 255, 255), 2)
+                cv2.rectangle(frame, (x, y), (w, h), (0, 255, 255), 2)
         except:
             continue
     # Show the frame

@@ -58,7 +58,7 @@ class EnemyDetection:
 
         # Tests with mask and frame
         result = cv2.bitwise_and(person_frame, person_frame, mask=mask)
-        print(np.average(result))
+
         # Checks if there is a red shirt
         if np.average(result) > 5:
             return True

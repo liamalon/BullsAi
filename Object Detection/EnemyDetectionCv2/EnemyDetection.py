@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from typing import Tuple
 
+COLOR_THRESHOLD = 15
+
 class EnemyDetection:
     """
     EnemyDetection is a class that is in charge
@@ -60,7 +62,7 @@ class EnemyDetection:
         result = cv2.bitwise_and(person_frame, person_frame, mask=mask)
 
         # Checks if there is a red shirt
-        if np.average(result) > 5:
+        if np.average(result) > COLOR_THRESHOLD:
             return True
 
         return False

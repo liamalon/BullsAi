@@ -58,7 +58,4 @@ class EnemyTargeting:
         # Return the number of staps in each axis 
         return (num_steps_x, num_steps_y) 
 
-
-
-
         

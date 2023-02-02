@@ -31,6 +31,35 @@ class EnemyDetection:
         # Read a frame from the video stream
         ret, frame = self.camera.read()
         return frame
+    
+    def is_wearing_red_shirt(self, person_frame: np.ndarray) -> bool:
+        """
+        Checks if the person in the frame is wearing a red shirt
+        Args:
+            person_frame (np.ndarray): the frame only of the person
+        
+        Returns:
+            bool: True if hw is wearing a red shirt, False if not
+        """
+
+        # Convert to hsv color
+        hsv = cv2.cvtColor(person_frame, cv2.COLOR_BGR2HSV)
+
+        # lower and upper red in hsv
+        lower = np.array([155,25,0])
+        upper = np.array([179,255,255])
+        
+        # Makes mask to test
+        mask = cv2.inRange(hsv, lower, upper)
+
+        # Tests with mask and frame
+        result = cv2.bitwise_and(person_frame, person_frame, mask=mask)
+
+        # Checks if there is a red shirt
+        if np.average(result) > 2:
+            return True
+
+        return False
 
     def get_people_from_image(self, frame: np.ndarray) -> Tuple:
         """
@@ -74,8 +103,9 @@ class EnemyDetection:
                 y = int(detections[0, 0, people, 4] * frame.shape[0])
                 w = int(detections[0, 0, people, 5] * frame.shape[1])
                 h = int(detections[0, 0, people, 6] * frame.shape[0])
-                #print(f"Person in: {x, w, y, h}")
-                people.append([x, w, y, h, confidence])
+                person = frame[y:h, x:w]
+                if self.is_wearing_red_shirt(person):
+                    people.append([x, w, y, h, confidence])
             
         if len(people) != 0:
             return sorted(people, key = lambda x: x[-1], reverse=True)[0]

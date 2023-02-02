@@ -42,6 +42,10 @@ class EnemyDetection:
             bool: True if hw is wearing a red shirt, False if not
         """
 
+        # Check if person frame is empty
+        if not np.any(person_frame):
+            return False
+
         # Convert to hsv color
         hsv = cv2.cvtColor(person_frame, cv2.COLOR_BGR2HSV)
 
@@ -54,9 +58,9 @@ class EnemyDetection:
 
         # Tests with mask and frame
         result = cv2.bitwise_and(person_frame, person_frame, mask=mask)
-
+        print(np.average(result))
         # Checks if there is a red shirt
-        if np.average(result) > 2:
+        if np.average(result) > 5:
             return True
 
         return False
@@ -69,7 +73,7 @@ class EnemyDetection:
 
         Returns:
             Returns:
-                people tuple(x, y, w, h, confidence): all the boxes and locations
+                people tuple(top left x, top left y, buttom right x, buttom right y, confidence): all the boxes and locations
                 of people in the frame 
         """
 
@@ -90,27 +94,32 @@ class EnemyDetection:
             frame (np.ndarray): the current frame
         
         Returns:
-            people tuple(x, y, w, h, confidence): all the boxes and locations
+            people tuple(top left x, top left y, buttom right x, buttom right y, confidence): all the boxes and locations
             of people in the frame 
         """
-        people = []
+        # People lisr
+        people_tuple = ()
+
         # Loop over the detections
         for people in range(detections.shape[2]):
             confidence = detections[0, 0, people, 2]
             if confidence > 0.9:
-                # Get the x, y, w, h for the detection
-                x = int(detections[0, 0, people, 3] * frame.shape[1])
-                y = int(detections[0, 0, people, 4] * frame.shape[0])
-                w = int(detections[0, 0, people, 5] * frame.shape[1])
-                h = int(detections[0, 0, people, 6] * frame.shape[0])
-                person = frame[y:h, x:w]
+                # Get the top left x, top left y, buttom right x, buttom right y for the detection
+                r_t_x = int(detections[0, 0, people, 3] * frame.shape[1])
+                r_t_y = int(detections[0, 0, people, 4] * frame.shape[0])
+                l_b_x = int(detections[0, 0, people, 5] * frame.shape[1])
+                l_b_y = int(detections[0, 0, people, 6] * frame.shape[0])
+                person = frame[r_t_y:l_b_y, r_t_x:l_b_x]
                 if self.is_wearing_red_shirt(person):
-                    people.append([x, w, y, h, confidence])
-            
-        if len(people) != 0:
-            return sorted(people, key = lambda x: x[-1], reverse=True)[0]
-        
-        return people
+                    people_tuple = (r_t_x, r_t_y, l_b_x, l_b_y, confidence)
+                    # The condfidence list is sorted so we want the highest confidence of a red shirt person
+                    break
+            else:
+                # The condfidence list is sorted so if it is lower the 0.9 we want to exit the loop
+                break
+                
+        return people_tuple
+    
     
 
         

@@ -2,12 +2,12 @@ import cv2
 import numpy as np
 import os
 
-os.chdir(r"G:\Final Project\Auto Aim Nerf\Object Detection\EnemyDetectionCv2\Models")
+os.chdir(r"E:\Final Project\Auto Aim Nerf\Object Detection\EnemyDetectionCv2\Models")
 # Load the pre-trained model for person detection
 net = cv2.dnn.readNetFromCaffe('..\\Models\\MobileNetSSD_deploy.prototxt', '..\\Models\\MobileNetSSD_deploy.caffemodel')
 
 # Load the video stream
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while True:
     # Read a frame from the video stream

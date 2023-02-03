@@ -1,5 +1,5 @@
 import socket
-from TcpBySize import TcpBySize
+from ComputerServer.TcpBySize import TcpBySize
 from typing import Any
 
 DEFUALT_LISTEN_IP = '0.0.0.0'

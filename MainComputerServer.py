@@ -1,9 +1,7 @@
 from ComputerServer.Server import Server
 import numpy as np
-import sys
 
-sys.path.append(r"Object Detection\EnemyDetectionCv2\EnemyDetection.py")
-from EnemyDetection import EnemyDetection
+from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 
 class ImageDetection:
     """
@@ -75,6 +73,7 @@ class ImageDetection:
     def calc_num_steps(self):
         """
         TODO: complete here and fix branching
+        TODO: Add Udp server client
         """
         # Get tuple of person
         self.enemy_detector.get_people_from_image(self.frame)
@@ -82,3 +81,7 @@ class ImageDetection:
     def send_steps():
         pass
 
+if __name__ == "__main__":
+    sr = Server(1234, 5)
+    # sr.start_server()
+    id = ImageDetection(sr)

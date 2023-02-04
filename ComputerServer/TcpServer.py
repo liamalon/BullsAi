@@ -1,6 +1,6 @@
 import socket
 from ComputerServer.TcpBySize import TcpBySize
-from typing import Any
+from typing import Any, Tuple, ByteString
 
 DEFUALT_LISTEN_IP = '0.0.0.0'
 DEFUALT_LISTEN_NUM = 20
@@ -33,7 +33,7 @@ class Server:
         self.server_sock.listen(DEFUALT_LISTEN_NUM)
     
     
-    def accept_clients(self):
+    def accept_clients(self) -> None:
         """
         Accepts clients to server
         """
@@ -41,14 +41,14 @@ class Server:
         self.client_sockets.append(cli_sock)
         print(f"connected, ip {addr}, port {self.port}")
     
-    def start_server(self):
+    def start_server(self) -> None:
         """
         Starts server listen and accept
         """
         self.start_listen()
         self.accept_clients()
     
-    def send_msg(self, sock: socket.socket, data: Any):
+    def send_msg(self, sock: socket.socket, data: Any) -> None:
         """
         Sends data to client
         Args:
@@ -60,7 +60,7 @@ class Server:
 
         TcpBySize.send_with_size(sock, data)
     
-    def recv_msg(self, sock: socket.socket):
+    def recv_msg(self, sock: socket.socket) -> Tuple[ByteString, ByteString]:
         """
         Recives data from client
         Args:

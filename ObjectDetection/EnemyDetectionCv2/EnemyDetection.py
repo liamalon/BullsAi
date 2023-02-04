@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from typing import Tuple
 from ObjectDetection.EnemyDetectionCv2.ColorDetection.ColorDetector import ColorDetector
+import os
 
 class EnemyDetection:
     """
@@ -16,8 +17,11 @@ class EnemyDetection:
         to get them ready fo use
         """
 
+        prototext_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.prototxt')
+        caffemodel_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.caffemodel')
+
         # Load the pre-trained model for person detection
-        self.model = cv2.dnn.readNetFromCaffe('ObjectDetection\\EnemyDetectionCv2\\Models\\MobileNetSSD_deploy.prototxt', 'ObjectDetection\\EnemyDetectionCv2\\Models\\MobileNetSSD_deploy.caffemodel')
+        self.model = cv2.dnn.readNetFromCaffe(prototext_path, caffemodel_path)
 
         # Load the video stream
         self.camera = cv2.VideoCapture(video_input)

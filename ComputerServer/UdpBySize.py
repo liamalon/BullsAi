@@ -10,7 +10,10 @@ LEN_SIZE_HEADER = len(SIZE_HEADER_FORMAT)
 TCP_DEBUG = False 
 
 # Max len to print
-LEN_TO_PRINT = 100 
+LEN_TO_PRINT = 100
+
+# Batch size
+BATCH_SIZE = 4096
 
 class UdpBySize:
 
@@ -26,7 +29,6 @@ class UdpBySize:
             addr (tuple): the addr of the sender 
         """
         data_len = 0
-        batch_counter = 0
         size_header = b''
         data  = b''
         addr = b''
@@ -43,26 +45,15 @@ class UdpBySize:
         # Get data 
         if size_header != b'':
             data_len = int(size_header[:LEN_SIZE_HEADER - 1])
-            original_data_len = data_len
 
-            # Check if it is a big file
-            if data_len > 30_000:
-                data_len = data_len // 100
+            while len(data) < data_len:
 
-            while len(data) < original_data_len:
-                if batch_counter == 99: 
-                    _d = sock.recvfrom(original_data_len-len(data))[0]
-                
-                else:
-                    _d = sock.recvfrom(data_len)[0]
+                _d = sock.recvfrom(BATCH_SIZE)[0]
 
                 if _d == b'':
                     return b'', addr
                 
                 data += _d
-                batch_counter += 1
-                
-                sock.sendto(b"OK", addr)
                 
         # Debugging
         if  TCP_DEBUG and size_header != b'':
@@ -70,7 +61,7 @@ class UdpBySize:
             print ("%s"%(data[:min(len(data), LEN_TO_PRINT)], ))
 
         # If got Partial data returns nothing becuase partial data is like no data
-        if original_data_len != len(data):
+        if data_len != len(data):
             return b'', addr
 
         # Returnd data recived without length

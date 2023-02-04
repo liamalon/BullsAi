@@ -77,28 +77,17 @@ class UdpBySize:
         # Send length first
         sock.sendto(header_data, addr)
 
-        if len_data > 30_000:
-
-            for batch_num in range(1, 101):
-                # Send Batchs because data to large
-                batch = bdata[(len_data//100)*(batch_num-1):(len_data//100)*(batch_num)]
-
-                # Incase of the last batch, send everything left
-                if batch_num == 100:
-                    batch = bdata[(len_data//100)*(batch_num-1):]
-
-                # Send data after
-                sock.sendto(batch, addr)
-
-                if sock.recvfrom(2)[0] == b"OK":
-                    pass
+        # Check if it is a big file
+        if len_data > 1000:
+            
+            # Split to batches
+            for batch_num in range(0, len_data, 4096):
+                # Send to server
+                sock.sendto(bdata[batch_num:batch_num+4096], addr)
 
         else:
             # Send data after
             sock.sendto(bdata, addr)
-
-            if sock.recvfrom(2)[0] == b"OK":
-                    pass
 
         # Debugging
         if TCP_DEBUG and  len_data > 0:

@@ -17,7 +17,7 @@ class EnemyDetection:
         """
 
         # Load the pre-trained model for person detection
-        self.model = cv2.dnn.readNetFromCaffe('Models\\MobileNetSSD_deploy.prototxt', 'Models\\MobileNetSSD_deploy.caffemodel')
+        self.model = cv2.dnn.readNetFromCaffe('ObjectDetection\\EnemyDetectionCv2\\Models\\MobileNetSSD_deploy.prototxt', 'ObjectDetection\\EnemyDetectionCv2\\Models\\MobileNetSSD_deploy.caffemodel')
 
         # Load the video stream
         self.camera = cv2.VideoCapture(video_input)
@@ -32,39 +32,6 @@ class EnemyDetection:
         # Read a frame from the video stream
         ret, frame = self.camera.read()
         return frame
-    
-    def is_wearing_red_shirt(self, person_frame: np.ndarray) -> bool:
-        """
-        Checks if the person in the frame is wearing a red shirt
-        Args:
-            person_frame (np.ndarray): the frame only of the person
-        
-        Returns:
-            bool: True if hw is wearing a red shirt, False if not
-        """
-
-        # Check if person frame is empty
-        if not np.any(person_frame):
-            return False
-
-        # Convert to hsv color
-        hsv = cv2.cvtColor(person_frame, cv2.COLOR_BGR2HSV)
-
-        # lower and upper red in hsv
-        lower = np.array([155,25,0])
-        upper = np.array([179,255,255])
-        
-        # Makes mask to test
-        mask = cv2.inRange(hsv, lower, upper)
-
-        # Tests with mask and frame
-        result = cv2.bitwise_and(person_frame, person_frame, mask=mask)
-
-        # Checks if there is a red shirt
-        if np.average(result) > COLOR_THRESHOLD:
-            return True
-
-        return False
 
     def get_people_from_image(self, frame: np.ndarray) -> Tuple:
         """
@@ -120,6 +87,20 @@ class EnemyDetection:
                 break
                 
         return people_tuple
+
+    def show_frame(self, frame: np.ndarray) -> None:
+        """
+        In order to have a graphic and visual
+        understanding of the frame
+
+        Args:
+            frame (np.ndarray): the current frame to show
+        """
+
+        # Show the frame
+        cv2.imshow('frame', frame)
+        
+        cv2.waitKey(1) 
     
     
 

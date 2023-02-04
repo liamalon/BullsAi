@@ -44,8 +44,6 @@ class UdpServer:
     def recv_msg(self) -> Tuple[ByteString, ByteString, Tuple]:
         """
         Recives data from client
-        Args:
-            sock (socket.socket): socket to recive data from
 
         Returns:
             (code: bytes , data: bytes, address: tuple): the msg code and msg data and addr of the sender

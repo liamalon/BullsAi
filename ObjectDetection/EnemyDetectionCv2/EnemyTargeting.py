@@ -45,7 +45,7 @@ class EnemyTargeting:
         """
 
         # New target location
-        new_center_x, new_center_y = self.GetCenterOfPeople(people)
+        new_center_x, new_center_y = self.get_center_of_people(people)
 
         # Calculate the distance between the two points
         distance_x = new_center_x - current_x
@@ -56,6 +56,6 @@ class EnemyTargeting:
         num_steps_y = distance_y // self.step_size
  
         # Return the number of staps in each axis 
-        return (num_steps_x, num_steps_y) 
+        return (int(num_steps_x), int(num_steps_y)) 
 
         

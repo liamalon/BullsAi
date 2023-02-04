@@ -89,6 +89,10 @@ class UdpBySize:
             # Send data after
             sock.sendto(bdata, addr)
 
+        # Checking approvel from server
+        if sock.recvfrom(2)[0] == b"OK":
+            pass  
+
         # Debugging
         if TCP_DEBUG and  len_data > 0:
             print ("\nSent(%s)>>>" % (len_data, ), end='')

@@ -54,7 +54,7 @@ class UdpBySize:
                     return b'', addr
                 
                 data += _d
-                
+
         # Debugging
         if  TCP_DEBUG and size_header != b'':
             print ("\nRecv(%s)>>>" % (size_header, ), end='')
@@ -62,7 +62,11 @@ class UdpBySize:
 
         # If got Partial data returns nothing becuase partial data is like no data
         if data_len != len(data):
+            # Could be an error here becuse of not sending OK
             return b'', addr
+
+        # Sending approve to client when finished
+        sock.sendto(b"OK", addr)
 
         # Returnd data recived without length
         return data, addr

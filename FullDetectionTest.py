@@ -1,12 +1,16 @@
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import cv2, os
-
+import numpy as np
 if __name__ == "__main__":
-    ed = EnemyDetection()
-    et = EnemyTargeting(1)
+    ed = EnemyDetection(video_input=1)
+    et = EnemyTargeting(0)
     while True:
         frame = ed.get_image()
+        params = [cv2.IMWRITE_JPEG_QUALITY, 10]
+        _, buffer = cv2.imencode('.jpg', frame, params)
+        print(len(buffer))
+        frame = cv2.imdecode(np.frombuffer(buffer, np.uint8), cv2.IMREAD_COLOR)
         person = ed.get_people_from_image(frame)
         if person != ():
             x = person[0]
@@ -21,6 +25,6 @@ if __name__ == "__main__":
         # Show the frame
         cv2.imshow('frame', frame)
         # Break the loop if the 'q' key is pressed
-        if cv2.waitKey(10000) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         

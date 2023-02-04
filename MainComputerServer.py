@@ -4,6 +4,7 @@ from typing import Tuple
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import struct
+import cv2
 
 class ImageDetection:
     """
@@ -51,7 +52,7 @@ class ImageDetection:
             data (bytes): Raw data from client
         """
 
-        self.frame_shape = struct.unpack('3i', data)
+        self.frame_shape = struct.unpack('1i', data)
 
     def set_frame(self, data: bytes, show_frame: bool = True) -> None:
         """
@@ -64,7 +65,7 @@ class ImageDetection:
         """
 
         # Set frame got from client
-        self.frame = np.frombuffer(data, dtype=np.uint8).reshape(self.frame_shape)
+        self.frame = cv2.imdecode(np.frombuffer(data, np.uint8).reshape(*self.frame_shape), cv2.IMREAD_COLOR)
 
         if show_frame:
             self.enemy_detector.show_frame(self.frame)

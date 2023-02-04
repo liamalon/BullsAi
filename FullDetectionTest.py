@@ -7,7 +7,7 @@ if __name__ == "__main__":
     et = EnemyTargeting(0)
     while True:
         frame = ed.get_image()
-        params = [cv2.IMWRITE_JPEG_QUALITY, 10]
+        params = [cv2.IMWRITE_JPEG_QUALITY, 15]
         _, buffer = cv2.imencode('.jpg', frame, params)
         print(len(buffer))
         frame = cv2.imdecode(np.frombuffer(buffer, np.uint8), cv2.IMREAD_COLOR)

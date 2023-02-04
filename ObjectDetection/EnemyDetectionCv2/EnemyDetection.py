@@ -88,7 +88,7 @@ class EnemyDetection:
                 l_b_x = int(detections[0, 0, people, 5] * frame.shape[1])
                 l_b_y = int(detections[0, 0, people, 6] * frame.shape[0])
                 person = frame[r_t_y:l_b_y, r_t_x:l_b_x]
-                if not ColorDetector.is_domminent(person):
+                if ColorDetector.is_domminent(person):
                     people_tuple = (r_t_x, r_t_y, l_b_x, l_b_y, confidence)
                     # The condfidence list is sorted so we want the highest confidence of a red shirt person
                     break

@@ -15,7 +15,7 @@ class ImageTransfer:
         """
         Intializg UdpClient class and EnemyDetection class 
         """
-        self.enemy_detector = EnemyDetection()
+        self.enemy_detector = EnemyDetection(load_models=False)
         self.udp_client = udp_client
 
     def send_frame(self) -> None:

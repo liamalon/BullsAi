@@ -11,17 +11,23 @@ class EnemyDetection:
     of an enemy
     """
 
-    def __init__(self, video_input:int = 0) -> None:
+    def __init__(self, video_input:int = 0, load_models: bool = True) -> None:
         """
         Initializng the model and camera in order
         to get them ready fo use
+
+        Args:
+            video_input (int): which input to use
+            load_models (bool): if we want to load models
         """
 
-        prototext_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.prototxt')
-        caffemodel_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.caffemodel')
+        # Not loading models on the RaspberryPi because it dosent use them 
+        if load_models:
+            prototext_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.prototxt')
+            caffemodel_path = os.path.join('ObjectDetection','EnemyDetectionCv2','Models','MobileNetSSD_deploy.caffemodel')
 
-        # Load the pre-trained model for person detection
-        self.model = cv2.dnn.readNetFromCaffe(prototext_path, caffemodel_path)
+            # Load the pre-trained model for person detection
+            self.model = cv2.dnn.readNetFromCaffe(prototext_path, caffemodel_path)
 
         # Load the video stream
         self.camera = cv2.VideoCapture(video_input)

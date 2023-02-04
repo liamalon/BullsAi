@@ -3,6 +3,7 @@ from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 import numpy as np
 import struct
+import sys
 
 class ImageTransfer:
     """
@@ -48,6 +49,6 @@ class ImageTransfer:
                 self.recv_steps(data)
 
 if __name__ == "__main__":
-    udp_client = UdpClient("127.0.0.1", 8888, 5)
+    udp_client = UdpClient(sys.argv[1], 8888, 5)
     it = ImageTransfer(udp_client)
     it.handle_server()

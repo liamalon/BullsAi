@@ -50,9 +50,18 @@ class ImageTransfer:
         # is for the number of elements and i is for their type (integer)
         self.udp_client.send_msg(b'SHAPE'+bytearray(struct.pack(f'{len(shape)}i', *shape)), False)
 
-    def recv_steps(self, data: bytearray):
+    def recv_steps(self, data: bytearray) -> None:
+        """
+        Recive number of steps from client
+
+        Args:
+            data (bytearray): the date from server
+        """
+        # Need to unpack in order to get the steps tuple
         steps = struct.unpack('2i', data)
-        print(steps)
+
+        # Debugging
+        print("Num steps:", steps, end ="\r")
     
     def handle_server(self) -> None:
         """

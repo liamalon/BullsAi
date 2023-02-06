@@ -5,6 +5,7 @@ from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import struct
 import cv2
+from datetime import datetime
 
 class ImageDetection:
     """
@@ -43,6 +44,12 @@ class ImageDetection:
         # Get height of window
         self.window_height = self.enemy_detector.camera.get(4)
 
+        # Num frames got in evey second
+        self.num_frames = 0
+
+        # Start timer to get every second
+        self.start = datetime.now()
+
     def set_shape(self, data: bytes) -> None:
         """
         Get raw data from client, turns it into 
@@ -54,21 +61,44 @@ class ImageDetection:
 
         self.frame_shape = struct.unpack('1i', data)
 
-    def set_frame(self, data: bytes, show_frame: bool = True) -> None:
+    def set_frame(self, data: bytes, show_frame: bool = True, show_fps: bool = True) -> None:
         """
         Get raw data from client, turns it into 
         numpy array and sets it to self.frame
 
         Args:
             data (bytes): Raw data from client
-            show_frame (bool): if you want to show frame set true
+            show_frame (bool): if you want to show frame set true [defualt False]
+            show_fps (bool): if you want to show fps set true [defualt False]
         """
-
+                
         # Set frame got from client
         self.frame = cv2.imdecode(np.frombuffer(data, np.uint8).reshape(*self.frame_shape), cv2.IMREAD_COLOR)
-
+        
+        # When we want to see the frames we can use show frame
         if show_frame:
+            # Shows the frame
             self.enemy_detector.show_frame(self.frame)
+        
+        if show_fps:
+            # Increase the num of frames
+            self.num_frames += 1
+
+            # Shows fps
+            self.show_fps()
+        
+    def show_fps(self) -> None:
+        """
+        Shows the number of frames per second
+        """
+        # The currnt time
+        now = datetime.now()
+
+        # Time past between the start of reciving and now
+        time_past = now - self.start
+
+        # Print fps 
+        print(f"FPS: {self.num_frames // time_past.seconds}", end = "\r")
         
     def handle_recv(self) -> None:
         """

@@ -2,7 +2,11 @@ import socket
 from RaspberryPiClient.UdpBySize import UdpBySize
 from typing import Any, Tuple, ByteString
 
+# Defualt listen ip
 DEFUALT_LISTEN_IP = '0.0.0.0'
+
+# Batch size
+BUFF_SIZE = 65536
 
 class UdpClient:
     """
@@ -19,9 +23,19 @@ class UdpClient:
             port (int): gets the port to open the server on 
             msg_code_len (int): the len of the msg code
         """
+        # The port of the server
         self.port = port
+
+        # The ip of the server
         self.server_ip = server_ip
+
+        # Create socket
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        
+        # Set socket opt
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
+        
+        # Set msg code len
         self.msg_code_len = msg_code_len
                 
     def send_msg(self, data: Any, to_encode:bool = False) -> None:
@@ -32,9 +46,12 @@ class UdpClient:
             addr (tuple): the addr to send to
             to_encode (bool): set to false, if true will encode msg
         """
+        # If we want to encode
         if to_encode:
+            # Encoed the data
             data = data.encode()
 
+        # Send data with size
         UdpBySize.send_with_size(self.socket, data, (self.server_ip, self.port))
     
     def recv_msg(self) -> Tuple[ByteString, ByteString, Tuple]:
@@ -46,9 +63,13 @@ class UdpClient:
         Returns:
             (code: bytes , data: bytes, address: tuple): the msg code and msg data and addr of the sender
         """
-
+        # Reciving data and breaking it down to message and address
         message, address = UdpBySize.recv_by_size(self.socket)
+
+        # The first X (self.msg_code_len) bytes is code
         code = message[:self.msg_code_len]
+
+        # The rest is data itself
         data = message[self.msg_code_len:]
         
         return code, data, address

@@ -5,7 +5,9 @@ from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import struct
 import cv2
-from datetime import datetime
+import time
+
+FPS_BATCH = 20
 
 class ImageDetection:
     """
@@ -48,7 +50,7 @@ class ImageDetection:
         self.num_frames = 0
 
         # Start timer to get every second
-        self.start = datetime.now()
+        self.start = time.time()
 
     def set_shape(self, data: bytes) -> None:
         """
@@ -91,15 +93,23 @@ class ImageDetection:
         """
         Shows the number of frames per second
         """
-        # The currnt time
-        now = datetime.now()
+        # Check if time to print fps
+        if self.num_frames % FPS_BATCH == 0:
+            # The currnt time
+            now = time.time()
 
-        # Time past between the start of reciving and now
-        time_past = now - self.start
+            # Time past between the start of reciving and now
+            time_past = now - self.start
 
-        # Print fps 
-        print(f"FPS: {self.num_frames // time_past.seconds}", end = "\r")
-        
+            # Print fps 
+            print(f"FPS: {self.num_frames // time_past}", end = "\r")
+
+            # Reseting num frames to 0
+            self.num_frames = 0
+
+            # Reseting the time start to now
+            self.start = time.time()
+            
     def handle_recv(self) -> None:
         """
         In charge of reciving the data from client 

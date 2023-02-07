@@ -2,7 +2,11 @@ import socket
 from ComputerServer.UdpBySize import UdpBySize
 from typing import Any, Tuple, ByteString
 
+# Defualt listen ip
 DEFUALT_LISTEN_IP = '0.0.0.0'
+
+# Batch size
+BUFF_SIZE = 65536
 
 class UdpServer:
     """
@@ -20,6 +24,7 @@ class UdpServer:
         """
         self.port = port
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
         self.msg_code_len = msg_code_len
             
     def start_server(self) -> None:

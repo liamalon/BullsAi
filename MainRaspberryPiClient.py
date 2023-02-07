@@ -14,11 +14,14 @@ class ImageTransfer:
     and sending them to the server 
     """
 
-    def __init__(self, udp_client: UdpClient) -> None:
+    def __init__(self, udp_client: UdpClient, video_input: int = 0) -> None:
         """
         Intializg UdpClient class and EnemyDetection class 
+        Args:
+            udp_client (UdpClient): the udp client of the rsapberrypi
+            video_input (int): the video input you want to use 
         """
-        self.enemy_detector = EnemyDetection(load_models=False)
+        self.enemy_detector = EnemyDetection(load_models=False, video_input=video_input)
         self.udp_client = udp_client
         self.params = [cv2.IMWRITE_JPEG_QUALITY, FRAME_QUALITY]
     
@@ -76,5 +79,5 @@ class ImageTransfer:
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)
-    it = ImageTransfer(udp_client)
+    it = ImageTransfer(udp_client, video_input=0)
     it.handle_server()

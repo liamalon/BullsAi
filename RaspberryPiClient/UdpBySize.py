@@ -10,7 +10,10 @@ LEN_SIZE_HEADER = len(SIZE_HEADER_FORMAT)
 TCP_DEBUG = False 
 
 # Max len to print
-LEN_TO_PRINT = 100 
+LEN_TO_PRINT = 100
+
+# Batch size
+BATCH_SIZE = 65536
 
 class UdpBySize:
 
@@ -81,17 +84,17 @@ class UdpBySize:
         if len_data > 1000:
             
             # Split to batches
-            for batch_num in range(0, len_data, 4096):
+            for batch_num in range(0, len_data, BATCH_SIZE):
                 # Send to server
-                sock.sendto(bdata[batch_num:batch_num+4096], addr)
+                sock.sendto(bdata[batch_num:batch_num+BATCH_SIZE], addr)
 
         else:
             # Send data after
             sock.sendto(bdata, addr)
 
         # Checking approvel from server
-        if sock.recvfrom(2)[0] == b"OK":
-            pass  
+        # if sock.recvfrom(2)[0] == b"OK":
+        #     pass  
 
         # Debugging
         if TCP_DEBUG and  len_data > 0:

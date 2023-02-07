@@ -13,7 +13,7 @@ TCP_DEBUG = False
 LEN_TO_PRINT = 100
 
 # Batch size
-BATCH_SIZE = 4096
+BATCH_SIZE = 65536
 
 class UdpBySize:
 
@@ -65,8 +65,8 @@ class UdpBySize:
             # Could be an error here becuse of not sending OK
             return b'', addr
 
-        # Sending approve to client when finished
-        sock.sendto(b"OK", addr)
+        # # Sending approve to client when finished
+        # sock.sendto(b"OK", addr)
 
         # Returnd data recived without length
         return data, addr

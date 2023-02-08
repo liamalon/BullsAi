@@ -6,7 +6,7 @@ import struct
 import sys
 import cv2
 
-FRAME_QUALITY = 15
+FRAME_QUALITY = 80
 
 class ImageTransfer:
     """
@@ -25,10 +25,10 @@ class ImageTransfer:
         self.udp_client = udp_client
         self.params = [cv2.IMWRITE_JPEG_QUALITY, FRAME_QUALITY]
     
-    def decode_frame(self, frame: np.ndarray) -> np.ndarray:
+    def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
         In order to send less bytes and get 
-        faster results we decode the frame and compress it
+        faster results we encode the frame and compress it
 
         Args:
             frame (np.ndarray): the frame to decode
@@ -40,19 +40,10 @@ class ImageTransfer:
         """
         Sending the frame to the server on the computer
         """
-        frame = self.decode_frame(self.enemy_detector.get_image())
-        self.send_shape(frame.shape)
+        frame = self.encode_frame(self.enemy_detector.get_image())
 
-        self.udp_client.send_msg(b'FRAME'+ frame.tobytes(), False)
+        self.udp_client.send_frame(frame)
     
-    def send_shape(self, shape: tuple) -> None:
-        """
-        Sends the shape of the frame to the server on the computer
-        """
-        # Using struct to pack and send the tuple as bytes, len(shape) 
-        # is for the number of elements and i is for their type (integer)
-        self.udp_client.send_msg(b'SHAPE'+bytearray(struct.pack(f'{len(shape)}i', *shape)), False)
-
     def recv_steps(self, data: bytearray) -> None:
         """
         Recive number of steps from client
@@ -79,5 +70,5 @@ class ImageTransfer:
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)
-    it = ImageTransfer(udp_client, video_input=0)
-    it.handle_server()
+    it = ImageTransfer(udp_client, video_input = 0)
+    it.handle_server() 

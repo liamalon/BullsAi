@@ -1,6 +1,7 @@
 import socket
 from RaspberryPiClient.UdpBySize import UdpBySize
 from typing import Any, Tuple, ByteString
+import numpy as np
 
 # Defualt listen ip
 DEFUALT_LISTEN_IP = '0.0.0.0'
@@ -73,4 +74,7 @@ class UdpClient:
         data = message[self.msg_code_len:]
         
         return code, data, address
+
+    def send_frame(self, frame: np.ndarray):
+        self.socket.sendto(frame, (self.server_ip, self.port))
 

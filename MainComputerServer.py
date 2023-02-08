@@ -58,7 +58,7 @@ class ImageDetection:
         """
                 
         # Set frame got from client
-        self.frame = cv2.imdecode(np.fromstring(data, dtype=np.uint8), 1)
+        self.frame = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), 1)
 
         # When we want to see the frames we can use show frame
         if show_frame:
@@ -121,6 +121,7 @@ class ImageDetection:
             # Divide the width and height by 2 
             # in order to get the center of the screen
             return self.enemy_targeting.get_steps_to_people_center(self.window_width // 2, self.window_height // 2, person)
+        
         # If there isnt a person it should'nt move
         return (0, 0)       
 

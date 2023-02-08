@@ -6,7 +6,7 @@ import struct
 import sys
 import cv2
 
-FRAME_QUALITY = 80
+FRAME_QUALITY = 15
 
 class ImageTransfer:
     """

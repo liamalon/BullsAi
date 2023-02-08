@@ -76,5 +76,8 @@ class UdpClient:
         return code, data, address
 
     def send_frame(self, frame: np.ndarray):
+        """
+        Sends frame to server 
+        """
         self.socket.sendto(frame, (self.server_ip, self.port))
 

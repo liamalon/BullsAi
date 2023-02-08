@@ -2,7 +2,11 @@ import socket
 from ComputerServer.UdpBySize import UdpBySize
 from typing import Any, Tuple, ByteString
 
+# Defualt listen ip
 DEFUALT_LISTEN_IP = '0.0.0.0'
+
+# Batch size
+BUFF_SIZE = 65536
 
 class UdpServer:
     """
@@ -20,6 +24,7 @@ class UdpServer:
         """
         self.port = port
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
         self.msg_code_len = msg_code_len
             
     def start_server(self) -> None:
@@ -54,4 +59,16 @@ class UdpServer:
         data = message[self.msg_code_len:]
         
         return code, data, address
+
+    def recv_frame(self) -> Tuple[ByteString, Tuple]:
+        """
+        Recives framw from client
+        * Differs from recv_msg by not using udpbysize
+        Returns:
+            (code: bytes , data: bytes, address: tuple): the msg code and msg data and addr of the sender
+        """
+
+        data, address = self.socket.recvfrom(BUFF_SIZE)
+        
+        return data, address
 

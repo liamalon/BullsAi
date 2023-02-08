@@ -109,8 +109,9 @@ class EnemyDetection:
 
         # Show the frame
         cv2.imshow('frame', frame)
-        
-        cv2.waitKey(1) 
+
+        # For the pic to show
+        cv2.waitKey(1)
     
     
 

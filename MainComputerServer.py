@@ -25,12 +25,6 @@ class ImageDetection:
         # Initalizng the server in the class
         self.server = server
 
-        # A bool to check if got frame
-        self.got_frame = False
-
-        # The shape of the frame
-        self.frame_shape = None
-
         # The frame it self
         self.frame = None
 
@@ -52,17 +46,6 @@ class ImageDetection:
         # Start timer to get every second
         self.start = time.time()
 
-    def set_shape(self, data: bytes) -> None:
-        """
-        Get raw data from client, turns it into 
-        numpy array shape and sets it to self.frame_shape
-
-        Args:
-            data (bytes): Raw data from client
-        """
-
-        self.frame_shape = struct.unpack('1i', data)
-
     def set_frame(self, data: bytes, show_frame: bool = True, show_fps: bool = True) -> None:
         """
         Get raw data from client, turns it into 
@@ -75,8 +58,8 @@ class ImageDetection:
         """
                 
         # Set frame got from client
-        self.frame = cv2.imdecode(np.frombuffer(data, np.uint8).reshape(*self.frame_shape), cv2.IMREAD_COLOR)
-        
+        self.frame = cv2.imdecode(np.fromstring(data, dtype=np.uint8), 1)
+
         # When we want to see the frames we can use show frame
         if show_frame:
             # Shows the frame
@@ -117,14 +100,10 @@ class ImageDetection:
         *** In order for this to work shape has to be sent first ***
         """
         while True:
-            code, data, addr = self.server.recv_msg()
-            if code == b"SHAPE":
-                self.set_shape(data)
+            data, addr = self.server.recv_frame()
+            self.set_frame(data)
+            self.send_steps(addr)
 
-            elif code == b"FRAME":
-                self.set_frame(data)
-                self.send_steps(addr)
-    
     def calc_num_steps(self) -> Tuple[int, int]:
         """
         Gets num of steps from current center to person center

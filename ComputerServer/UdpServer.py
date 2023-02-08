@@ -60,3 +60,15 @@ class UdpServer:
         
         return code, data, address
 
+    def recv_frame(self) -> Tuple[ByteString, Tuple]:
+        """
+        Recives framw from client
+        * Differs from recv_msg by not using udpbysize
+        Returns:
+            (code: bytes , data: bytes, address: tuple): the msg code and msg data and addr of the sender
+        """
+
+        data, address = self.socket.recvfrom(BUFF_SIZE)
+        
+        return data, address
+

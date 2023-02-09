@@ -8,6 +8,7 @@ import cv2
 import time
 
 FPS_BATCH = 20
+NUM_FRAMES_TO_DETECT = 10
 
 class ImageDetection:
     """
@@ -64,11 +65,11 @@ class ImageDetection:
         if show_frame:
             # Shows the frame
             self.enemy_detector.show_frame(self.frame)
+
+        # Increase the num of frames
+        self.num_frames += 1
         
         if show_fps:
-            # Increase the num of frames
-            self.num_frames += 1
-
             # Shows fps
             self.show_fps()
         
@@ -134,15 +135,17 @@ class ImageDetection:
             addr (tuple): addres of the client to send to
         """
 
-        # Get num steps
-        steps_tuple = self.calc_num_steps()
-        
-        # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
-        # is for the number of elements and i is for their type (integer)
-        msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
+        # Check if time to send ai detection
+        if not (self.num_frames % NUM_FRAMES_TO_DETECT):
+            # Get num steps
+            steps_tuple = self.calc_num_steps()
+            
+            # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
+            # is for the number of elements and i is for their type (integer)
+            msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
 
-        # Send
-        self.server.send_msg(msg, addr, False)
+            # Send
+            self.server.send_msg(msg, addr, False)
 
 
 if __name__ == "__main__":

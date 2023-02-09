@@ -7,6 +7,7 @@ import sys
 import cv2
 
 FRAME_QUALITY = 15
+NUM_FRAMES_TO_DETECT = 10
 
 class ImageTransfer:
     """
@@ -24,6 +25,7 @@ class ImageTransfer:
         self.enemy_detector = EnemyDetection(load_models=False, video_input=video_input)
         self.udp_client = udp_client
         self.params = [cv2.IMWRITE_JPEG_QUALITY, FRAME_QUALITY]
+        self.num_frames = 0
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -43,6 +45,8 @@ class ImageTransfer:
         frame = self.encode_frame(self.enemy_detector.get_image())
 
         self.udp_client.send_frame(frame)
+
+        self.num_frames += 1
     
     def recv_steps(self, data: bytearray) -> None:
         """
@@ -62,11 +66,20 @@ class ImageTransfer:
         Handles networking with server
         """
         while True:
+            # Send frame to server
             self.send_frame()
-            code, data, addr = self.udp_client.recv_msg()
 
-            if code == b"STEPS":
-                self.recv_steps(data)
+            # Check if it is a time to get ai detection
+            if not (self.num_frames % NUM_FRAMES_TO_DETECT):
+
+                # Recv detection from server
+                code, data, addr = self.udp_client.recv_msg()
+
+                # Check if msg code is steps
+                if code == b"STEPS":
+
+                    # Recv steps
+                    self.recv_steps(data)
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)

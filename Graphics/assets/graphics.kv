@@ -1,5 +1,59 @@
 #:import utils kivy.utils
 
+<StartScreen>:
+    FloatLayout:
+        cols:1
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex('#DAF7A6')
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        FloatLayout:
+            size: root.width, root.height/2
+
+            Image:
+                source: 'bullsAi.png'
+                pos_hint: {'x':0.45, 'top':1.15}
+                size_hint: 0.7,0.7
+                allow_stretch: True
+                keep_ratio: True
+
+            Label:
+                text: "Welcome"
+                size_hint: 0.8, 0.2
+                pos_hint: {"x":-0.2, "top":0.9}
+                font_size: 40
+                color: "#581845"
+                font_name:"txt_font"
+            
+            Label:
+                text: "To"
+                size_hint: 0.8, 0.2
+                pos_hint: {"x":0.1, "top":0.6}
+                font_size: 40
+                color: "#581845"
+                font_name:"txt_font"
+            
+            Label:
+                text: "BullsAI"
+                size_hint: 0.8, 0.2
+                pos_hint: {"x":0.4, "top":0.4}
+                font_size: 40
+                color: "#581845"
+                font_name:"txt_font"
+
+            Label:
+                text: "Press any key to continue..."
+                size_hint: 0.8, 0.2
+                pos_hint: {"x":0.1, "top":0.2}
+                font_size: 40
+                color: "#581845"
+                font_name:"txt_font"
+
+
+
+
 <CreateAccountWindow>:
     name: "create"
 

@@ -14,6 +14,10 @@ import socket
 
 import sys
 
+# Load font 
+LabelBase.register(name= "txt_font",
+    fn_regular= "assets\\font.ttf")
+
 class CreateAccountWindow(Screen):
     """
         --> Create new account page <--
@@ -316,9 +320,6 @@ class ChangePassword(Screen):
         self.reset()
         window_manger.current = "main"
 
-class WindowManager(ScreenManager):
-    pass
-
 def invalidLogin():
     """
     --> Popup if login isn't good <--
@@ -392,15 +393,12 @@ def getting_backup():
                   size_hint=(None, None), size=(400, 400))
     pop.open()
 
-kv = Builder.load_file("Asset\\my.kv")
+kv = Builder.load_file("assets\\graphics.kv")
 
+
+class WindowManager(ScreenManager):
+    pass
 window_manger = WindowManager()
-
-screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"),MainWindow(name="main"),ChangePassword(name="cpass")]
-for screen in screens:
-    window_manger.add_widget(screen)
-
-window_manger.current = "login"
 
 class Gui(App):
     """
@@ -415,6 +413,17 @@ def startApp():
     """
     Gui().run()
 
+class StartScreen(Screen):
+    """
+    Start screen class is the graphic presention
+    of the start screen 
+    """
+
+screens = [StartScreen(name="start_screen")]
+for screen in screens:
+    window_manger.add_widget(screen)
+
+window_manger.current = "start_screen"
 if __name__ == "__main__":
     startApp()
 

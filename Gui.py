@@ -23,6 +23,14 @@ import pygame
 
 from pygame.locals import *
 
+import multiprocessing
+
+from multiprocessing import shared_memory
+
+import subprocess
+
+import time
+
 SPEED = 5
 SHOOT_BUTTON = 10 # R1
 pygame.init()
@@ -186,40 +194,19 @@ class HumanControlScreen(Screen):
         Handels all of the pygame events. Button press and joystick move
         """
         while True:
-            events = pygame.event.get()
-            for event in events:
-                # Check if any button was pressed
-                if event.type == JOYBUTTONDOWN:
-                    # Check if R1 was pressed, to shot
-                    if event.button == SHOOT_BUTTON:
-                        self.shot()
-
-                # Check if eny joystick moved
-                if event.type == JOYAXISMOTION:
-                    # Check if left joystick moved
-                    if event.axis < 2: # Only left joystick [left h, left v, right h, right v]
-                        self.motion[event.axis] = event.value if abs(event.value) >= 0.1 else 0
-
-                # To exit window
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-            # Calc num steps horizntal
-            steps_horizntal = round(self.motion[0] * SPEED)
-
-            # Calc num steps vertical
-            steps_vertical = round(self.motion[1] * SPEED)
-
-            self.move(steps_horizntal, steps_vertical)
-            
-            self.clock.tick(120)
+            try:
+                steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
+                self.move(steps_horizntal, steps_vertical)
+                self.shot()
+            except:
+                pass
             
     def shot(self):
         """
         When R1 is preesed send the client an order to shot
         """
-        print("Shot")
+        if self.shm[2] == 1:
+            print("Shot")
 
     def move(self, steps_horizntal: int, steps_vertical: int):
         """
@@ -259,7 +246,13 @@ class HumanControlScreen(Screen):
         image_detection_thread = threading.Thread(target = self.image_detection.handle_recv)
         image_detection_thread.start()
 
-        # Start steps sending thread
+        # controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
+
+        # time.sleep(2)
+
+        # self.shm = shared_memory.ShareableList(name="controller_mem")  * TOO SLOW *
+
+        # # Start steps sending thread
         # steps_thread = threading.Thread(target=self.send_steps)
         # steps_thread.start()
 

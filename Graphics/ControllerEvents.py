@@ -4,11 +4,12 @@ import pygame
 
 from pygame.locals import *
 
+from multiprocessing import shared_memory
+
 SPEED = 5
 SHOUT_BUTTON = 10 # R1
 pygame.init()
 pygame.joystick.init()
-
 
 class ControllerEvents:
     def __init__(self):
@@ -22,6 +23,8 @@ class ControllerEvents:
 
         else:
             raise Exception("Controller is not connected. Please connect controller")
+    
+        self.create_shm()
 
     def handle_events(self):
         """
@@ -35,6 +38,10 @@ class ControllerEvents:
                     # Check if R1 was pressed, to shot
                     if event.button == SHOUT_BUTTON:
                         self.shot()
+                    else:
+                        self.shared_list[2] = 0
+                else:
+                    self.shared_list[2] = 0
 
                 # Check if eny joystick moved
                 if event.type == JOYAXISMOTION:
@@ -61,7 +68,7 @@ class ControllerEvents:
         """
         When R1 was preesed send the client a order to shot
         """
-        print("Shot")
+        self.shared_list[2] = 1
         #    self. my_square_color = (self.my_square_color + 1) % len(self.colors)
 
     def move(self, steps_horizntal: int, steps_vertical: int):
@@ -75,9 +82,25 @@ class ControllerEvents:
         # If they are both 0 it means there is no need to move
         # So no need to send new location to the client
         if steps_horizntal + steps_vertical != 0: 
-            print((steps_horizntal, steps_vertical))
+            self.shared_list[0] = steps_horizntal
+            self.shared_list[1] = steps_vertical
+        else:
+            self.shared_list[0] = 0
+            self.shared_list[1] = 0
+        
+    def create_shm(self):
+        """
+        Creates a shared memory list
+        """
+        self.shared_list = shared_memory.ShareableList([0,0,0], name="controller_mem")
+    
+    def use_shm(self, name: str):
+        """
+        Uses an existing shared memory list and reads from it
+        """
+        self.shared_list = shared_memory.ShareableList(name=name)
+        return (self.shared_list[0], self.shared_list[1], self.shared_list[2])
+        
 
-
-if __name__ == "__main__":
-    gr = ControllerEvents()
-    gr.handle_events()
+gr = ControllerEvents()
+gr.handle_events()

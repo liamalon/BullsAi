@@ -12,13 +12,6 @@
         FloatLayout:
             size: root.width, root.height/2
 
-            Image:
-                source: 'bullsAi.png'
-                pos_hint: {'x':0.45, 'top':1.15}
-                size_hint: 0.7,0.7
-                allow_stretch: True
-                keep_ratio: True
-
             Label:
                 text: "Welcome"
                 size_hint: 0.8, 0.2
@@ -53,14 +46,7 @@
 
 
 
-
-<CreateAccountWindow>:
-    name: "create"
-
-    namee: namee
-    email: email
-    password: passw
-
+<OptionsScreen>:
     FloatLayout:
         cols:1
         
@@ -75,105 +61,43 @@
             size: root.width, root.height/2
 
             Label:
-                text: "Create an Account"
+                text: "Choose which option would you like?"
                 size_hint: 0.8, 0.2
                 pos_hint: {"x":0.1, "top":1}
                 font_size: (root.width**2 + root.height**2) / 13**4
                 color: "#581845"
                 font_name:"txt_font"
-            Label:
-                size_hint: 0.5,0.12
-                pos_hint: {"x":0, "top":0.75}
-                text: "Name: "
-                font_size: (root.width**2 + root.height**2) / 13**4
-                color: "#900C3F"
-                font_name:"txt_font"
-
-            TextInput:
-                id: namee
-                font_size: (root.width**2 + root.height**2) / 14**4
-                multiline: False
-                padding_y:(10,10)
-                pos_hint: {"x": 0.35 , "top":0.73}
-                size_hint: 0.5, 0.08
-                font_name:"txt_font"
-                cursor_color: "#581845"
-                background_color: '#DAF7A6'
-                background_normal: ""
-
-            Label:
-                size_hint: 0.5,0.12
-                pos_hint: {"x":0, "top":0.75-0.13}
-                text: "Email: "
-                font_size: (root.width**2 + root.height**2) / 13**4
-                color: "#900C3F"
-                font_name:"txt_font"
-
-            TextInput:
-                id: email
-                font_size: (root.width**2 + root.height**2) / 14**4
-                multiline: False
-                padding_y:(10,10)
-                pos_hint: {"x": 0.35 , "top":0.73-0.13}
-                size_hint: 0.5, 0.08
-                font_name:"txt_font"
-                cursor_color: "#581845"
-                background_color: '#DAF7A6'
-                background_normal: ""
-
-            Label:
-                size_hint: 0.5,0.12
-                pos_hint: {"x":0, "top":0.75-0.13*2}
-                text: "Password: "
-                font_size: (root.width**2 + root.height**2) / 13**4
-                color: "#900C3F"
-                font_name:"txt_font"
-
-            TextInput:
-                id: passw
-                font_size: (root.width**2 + root.height**2) / 14**4
-                multiline: False
-                padding_y:(10,10)
-                password:True
-                pos_hint: {"x": 0.35 , "top":0.73-0.13*2}
-                size_hint: 0.5, 0.08
-                font_name:"txt_font"
-                cursor_color: "#581845"
-                background_color: '#DAF7A6'
-                background_normal: ""
 
         Button:
-            pos_hint:{"x":0.25,"y":0.2}
+            pos_hint:{"x":0.5,"y":0.2}
             size_hint: 0.5, 0.1
             font_size: 28
             font_name:"txt_font"
-            text: "Already have an Account? Log In"
+            text: "Auto Control"
             color: "#581845"
             background_color: '#DAF7A6'
             background_normal: ""
             on_release:
-                root.manager.transition.direction = "left"
-                root.login()
+                root.auto_control_screen()
 
         Button:
-            pos_hint:{"x":0.4,"y":0.075}
-            size_hint: 0.15, 0.075
-            text: "Submit"
+            pos_hint:{"x":0.05,"y":0.2}
+            size_hint: 0.5, 0.1
+            text: "Human Control"
             font_size: 28
             font_name:"txt_font"
             color: "#581845"
             background_color: '#DAF7A6'
             background_normal: ""
             on_release:
-                root.manager.transition.direction = "left"
-                root.submit()
+                root.human_control_screen()
 
 
-<LoginWindow>:
-    name: "login"
+<AuthenticationScreen>:
+    name: "authentication"
 
-    email: email
-    password: password
+    user_mail: user_mail
+    user_code: user_code
 
     FloatLayout:
 
@@ -183,17 +107,10 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
-
-        #AsyncImage:
-        #    source: 'D:\\DiskOnKeyProj\\br.png'
-        #    pos: self.pos
-        #    size: root.size
-        #    allow_stretch: True
-        #    keep_ratio: False
             
         Label:
             ### Title Label ###
-            text:"My Secure Disk "
+            text:"Authentication Needed"
             font_size: (root.width**2 + root.height**2) / 13**4
             pos_hint: {"center_x":0.5, "center_y":0.9}
             size_hint: 0.8, 0.8
@@ -211,7 +128,7 @@
 
         TextInput:
             ### Email Input Box ###
-            id: email
+            id: user_mail
             font_size: (root.width**2 + root.height**2) / 14**4
             multiline: False
             padding_y:(10,10)
@@ -224,7 +141,7 @@
 
         Label:
             ### Password Label ###
-            text:"Password: "
+            text:"Code: "
             font_size: (root.width**2 + root.height**2) / 13**4
             pos_hint: {"x":0.19, "top":0.5}
             size_hint: 0.2, 0.15
@@ -233,11 +150,10 @@
 
         TextInput:
             ### Password Input Box ###
-            id: password
+            id: user_code
             font_size: (root.width**2 + root.height**2) / 14**4
             multiline: False
             padding_y:(10,10)
-            password:True
             pos_hint: {"x": 0.4 , "top":0.465}
             size_hint: 0.5, 0.08
             font_name:"txt_font"
@@ -251,35 +167,14 @@
             size_hint: 0.2, 0.05
             font_size: 28
             font_name:"txt_font"
-            text: "Login"
+            text: "Next"
             color: "#581845"
             background_color: '#DAF7A6'
             background_normal: ""
             on_release:
-                root.manager.transition.direction = "up"
-                root.loginBtn()
+                root.check_code()
 
-        Button:
-             ### Login Button ###
-            pos_hint:{"center_x":0.5,"y":0.2}
-            size_hint: 0.5, 0.05
-            font_size: 22
-            font_name:"txt_font"
-            text: "Don't have an Account? Create One"
-            color: "#581845"
-            background_color: '#DAF7A6'
-            background_normal: ""
-            
-            on_release:
-                root.manager.transition.direction = "right"
-                root.createBtn()
-
-
-<MainWindow>:
-    n: n
-    email: email
-    created:created
-
+<AutoControlScreen>:
     FloatLayout:
         canvas:
             Color:
@@ -287,97 +182,15 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
-        Label:
-            id: n   
-            pos_hint:{"x": 0.1, "top":1}
-            size_hint:0.8, 0.2
-            text: "Account Details"
-            color:"#581845"
-            font_name:"txt_font"
-            font_size: (root.width**2 + root.height**2) / 12**4
 
-        Label:
-            id: n
-            pos_hint:{"x": 0.1, "top":0.9}
-            size_hint:0.8, 0.2
-            font_size: (root.width**2 + root.height**2) / 14**4
-            text: "Account Name: "
-            color:"#900C3F"
-            font_name:"txt_font"
-            
-
-        Label:
-            id: email
-            pos_hint:{"x": 0.1, "top":0.8}
-            size_hint:0.8, 0.2
-            text: "Email: "
-            color:"#900C3F"
-            font_name:"txt_font"
-            font_size: (root.width**2 + root.height**2) / 14**4
-
-        Label:
-            id: created
-            pos_hint:{"x": 0.1, "top":0.7}
-            size_hint:0.8, 0.2
-            text: "Created: "
-            color:"#900C3F"
-            font_name:"txt_font"
-            font_size: (root.width**2 + root.height**2) / 14**4
-
-        Button:
-
-            ### Log button ###
-            pos_hint:{"x":0.05, "y": 0.85}
-            size_hint:0.15,0.1
-            text: "Log Out"
-            font_size: (root.width**2 + root.height**2) / 14**4
-            font_name:"txt_font"
-            color: "#581845"
-            background_color: '#DAF7A6'
-            background_normal: ""
-            on_release:
-                root.manager.transition.direction = "down"
-                root.logOut()
-
-        Button:
-            ### Create Backup button ###
-            pos_hint:{"x":0.42, "y": 0.4}
-            size_hint:0.15,0.1
-            text: "Create New Backup"
-            font_size: (root.width**2 + root.height**2) / 14**4
-            font_name:"txt_font"
-            color: "#581845"
-            background_color: '#DAF7A6'
-            background_normal: ""
-            on_release:
-                root.create_backup_zip()  
-
-        Button:
-            ### Get Backup button ###
-            pos_hint:{"x":0.42, "y": 0.25}
-            size_hint:0.15,0.1
-            text: "Get Backup"
-            font_size: (root.width**2 + root.height**2) / 14**4
-            font_name:"txt_font"
-            color: "#581845"
-            background_color: '#DAF7A6'
-            background_normal: ""
-            on_release:
-                root.get_backup_zip()   
-
-        Button:
-            ### Change Password button ###
-            pos_hint:{"x":0.42, "y": 0.1}
-            size_hint:0.15,0.1
-            text: "Change Password"
-            font_size: (root.width**2 + root.height**2) / 14**4
-            font_name:"txt_font"
-            color: "#581845"
-            background_color: '#DAF7A6'
-            background_normal: ""
-            on_release:
-                root.manager.transition.direction = "up"
-                root.changePassword()   
+<HumanControlScreen>:
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex('#DAF7A6')
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
 <ChangePassword>:
 

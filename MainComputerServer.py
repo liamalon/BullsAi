@@ -7,14 +7,18 @@ import struct
 import cv2
 import time
 
-FPS_BATCH = 20
-NUM_FRAMES_TO_DETECT = 10
+FPS_BATCH: int = 20
+PORT: int = 8888
+CODE_LEN: int = 5
+STEP_SIZE: int = 1
+NUM_FRAMES_TO_DETECT: int = 5
 
 class ImageDetection:
     """
     ImageDetection class ia in charge of the detection of people 
     in frames sent from the raspberrypi
     """
+    
     def __init__(self, server: UdpServer, step_size: int) -> None:
         """
         Initalizing the server in the class
@@ -47,7 +51,10 @@ class ImageDetection:
         # Start timer to get every second
         self.start = time.time()
 
-    def set_frame(self, data: bytes, show_frame: bool = True, show_fps: bool = True) -> None:
+        # Indicates if the server is running or not
+        self.running = True
+
+    def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
         Get raw data from client, turns it into 
         numpy array and sets it to self.frame
@@ -100,7 +107,7 @@ class ImageDetection:
         and retriving correctly
         *** In order for this to work shape has to be sent first ***
         """
-        while True:
+        while self.running:
             data, addr = self.server.recv_frame()
             self.set_frame(data)
             self.send_steps(addr)
@@ -126,19 +133,21 @@ class ImageDetection:
         # If there isnt a person it should'nt move
         return (0, 0)       
 
-    def send_steps(self, addr: tuple) -> None:
+    def send_steps(self, addr: tuple, steps_tuple: tuple = None) -> None:
         """
         Sends num of steps in each direction
         to raspberryPi
 
         Args:
             addr (tuple): addres of the client to send to
+            steps_tuple (tuple): num of steps, is none by defualt
         """
 
         # Check if time to send ai detection
         if not (self.num_frames % NUM_FRAMES_TO_DETECT):
-            # Get num steps
-            steps_tuple = self.calc_num_steps()
+            if steps_tuple is None:
+                # Get num steps
+                steps_tuple = self.calc_num_steps()
             
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
@@ -149,8 +158,8 @@ class ImageDetection:
 
 
 if __name__ == "__main__":
-    us = UdpServer(8888, 5)
+    us = UdpServer(PORT, CODE_LEN)
     us.start_server()
-    id =ImageDetection(us, 1)
+    id = ImageDetection(us, STEP_SIZE)
     id.handle_recv()
 

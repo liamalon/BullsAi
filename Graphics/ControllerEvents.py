@@ -81,12 +81,12 @@ class ControllerEvents:
         """
         # If they are both 0 it means there is no need to move
         # So no need to send new location to the client
-        if steps_horizntal + steps_vertical != 0: 
-            self.shared_list[0] = steps_horizntal
-            self.shared_list[1] = steps_vertical
-        else:
+        if steps_horizntal == 0 and steps_vertical == 0: 
             self.shared_list[0] = 0
             self.shared_list[1] = 0
+        else:
+            self.shared_list[0] = steps_horizntal
+            self.shared_list[1] = steps_vertical
         
     def create_shm(self):
         """

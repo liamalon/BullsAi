@@ -31,14 +31,14 @@ import subprocess
 
 import time
 
-SPEED = 5
-SHOOT_BUTTON = 10 # R1
+SPEED: int = 5
+SHOOT_BUTTON: int = 10 # R1
 pygame.init()
 pygame.joystick.init()
 
-PORT = 8888
-CODE_LEN = 5
-STEP_SIZE = 1
+PORT: int = 8888
+CODE_LEN: int = 5
+STEP_SIZE: int = 1
 
 # Load font 
 LabelBase.register(name= "txt_font",
@@ -140,6 +140,7 @@ class AutoControlScreen(Screen):
         self.img.texture = texture
 
     def on_enter(self, *args):
+
         # Start server 
         udp_server = UdpServer(PORT, CODE_LEN)
         udp_server.start_server()
@@ -149,8 +150,11 @@ class AutoControlScreen(Screen):
 
         # Start Image detection class
         self.image_detection = ImageDetection(udp_server, STEP_SIZE)
+
         image_detection_thread = threading.Thread(target = self.image_detection.handle_recv)
         image_detection_thread.start()
+
+        
 
         # Set image widget
         self.img = Image()
@@ -193,35 +197,40 @@ class HumanControlScreen(Screen):
         """
         Handels all of the pygame events. Button press and joystick move
         """
+
         while True:
             try:
+                data, addr = self.image_detection.server.recv_frame()
+                self.image_detection.set_frame(data)
                 steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
-                self.move(steps_horizntal, steps_vertical)
-                self.shot()
+                self.move(steps_horizntal, steps_vertical, addr)
+                self.shot(addr)
             except:
-                pass
+                print("error")
             
-    def shot(self):
+    def shot(self, addr: tuple):
         """
         When R1 is preesed send the client an order to shot
+        
+        Args:
+            addr (tuple): address of the client
         """
         if self.shm[2] == 1:
             print("Shot")
 
-    def move(self, steps_horizntal: int, steps_vertical: int):
+    def move(self, steps_horizntal: int, steps_vertical: int, addr: tuple):
         """
         When joystick moved send the client num of steps in each diraction
 
         Args:
             steps_horizntal (int): stpes on the horizontal axis. Negative left, positive right.
             steps_vertical (int): stpes on the vertical axis. Negative up, positive down.
+            addr (tuple): address of the client
         """
         # If they are both 0 it means there is no need to move
         # So no need to send new location to the client
-
-        if steps_horizntal + steps_vertical != 0: 
-            #self.image_detection.send_steps(addr ,(steps_horizntal, steps_vertical))
-            print((steps_horizntal, steps_vertical))
+        
+        self.image_detection.send_steps(addr , (steps_horizntal, steps_vertical))
 
     def update_frame(self, dt):
         frame = self.image_detection.frame
@@ -243,18 +252,16 @@ class HumanControlScreen(Screen):
 
         # Start Image detection class
         self.image_detection = ImageDetection(udp_server, STEP_SIZE)
-        image_detection_thread = threading.Thread(target = self.image_detection.handle_recv)
-        image_detection_thread.start()
 
-        # controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
+        controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
 
-        # time.sleep(2)
+        time.sleep(2)
 
-        # self.shm = shared_memory.ShareableList(name="controller_mem")  * TOO SLOW *
+        self.shm = shared_memory.ShareableList(name="controller_mem")  # TOO SLOW 
 
-        # # Start steps sending thread
-        # steps_thread = threading.Thread(target=self.send_steps)
-        # steps_thread.start()
+        # Start steps sending thread
+        steps_thread = threading.Thread(target=self.send_steps)
+        steps_thread.start()
 
         # Set image widget
         self.img = Image()

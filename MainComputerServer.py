@@ -7,17 +7,18 @@ import struct
 import cv2
 import time
 
-FPS_BATCH = 20
-NUM_FRAMES_TO_DETECT = 10
-PORT = 8888
-CODE_LEN = 5
-STEP_SIZE = 1
+FPS_BATCH: int = 20
+PORT: int = 8888
+CODE_LEN: int = 5
+STEP_SIZE: int = 1
+NUM_FRAMES_TO_DETECT: int = 5
 
 class ImageDetection:
     """
     ImageDetection class ia in charge of the detection of people 
     in frames sent from the raspberrypi
     """
+    
     def __init__(self, server: UdpServer, step_size: int) -> None:
         """
         Initalizing the server in the class

@@ -1,6 +1,7 @@
 
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
+from MotorDriver.MotorsDriver import MotorsDriver
 import numpy as np
 import struct
 import sys
@@ -26,6 +27,7 @@ class ImageTransfer:
         self.udp_client = udp_client
         self.params = [cv2.IMWRITE_JPEG_QUALITY, FRAME_QUALITY]
         self.num_frames = 0
+        self.motors_driver = MotorsDriver()
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -60,6 +62,8 @@ class ImageTransfer:
 
         # Debugging
         print("Num steps:", steps, end ="\r")
+        
+        self.motors_driver.move_motors(steps)
     
     def handle_server(self) -> None:
         """

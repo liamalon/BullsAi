@@ -64,10 +64,13 @@ class ImageTransfer:
         steps = struct.unpack('2i', data)
 
         # Debugging
-        print("Num steps:", steps, end ="\r")
-    
-        t_move = threading.Thread(target=self.motors_driver.move_motors, args=(steps, ))
-        t_move.start()
+        print("Num steps:", steps, "\t", end ="\r")
+
+        # Removed threading - caused motor problems
+        # t_move = threading.Thread(target=self.motors_driver.move_motors, args=(steps, ))
+        # t_move.start()
+
+        self.motors_driver.move_motors(steps)
 
     def fire(self):
         """

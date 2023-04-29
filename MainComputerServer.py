@@ -11,7 +11,7 @@ FPS_BATCH: int = 20
 PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
-NUM_FRAMES_TO_DETECT: int = 5
+NUM_FRAMES_TO_DETECT: int = 10
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 12
 
 class ImageDetection:

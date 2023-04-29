@@ -66,7 +66,7 @@ class ImageTransfer:
         # Debugging
         print("Num steps:", steps, end ="\r")
     
-        t_move = threading.Thread(self.motors_driver.move_motors, args=(steps))
+        t_move = threading.Thread(target=self.motors_driver.move_motors, args=(steps, ))
         t_move.start()
 
     def fire(self):

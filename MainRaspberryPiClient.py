@@ -1,4 +1,5 @@
 
+import threading
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from MotorDriver.MotorsDriver import MotorsDriver
@@ -64,14 +65,16 @@ class ImageTransfer:
 
         # Debugging
         print("Num steps:", steps, end ="\r")
-        
-        self.motors_driver.move_motors(steps)
+    
+        t_move = threading.Thread(self.motors_driver.move_motors, args=(steps))
+        t_move.start()
 
     def fire(self):
         """
         Fires the gun
         """
-        self.gun.fire()
+        t_gun = threading.Thread(target=self.gun.fire)
+        t_gun.start()
     
     def handle_server(self) -> None:
         """

@@ -1,3 +1,5 @@
+import threading
+import time
 import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
@@ -57,5 +59,8 @@ class MotorsDriver:
         y_steps = steps_tuple[0]
 
         self.move_horizontal(abs(x_steps), x_steps < 0)
-        self.move_horizontal(abs(y_steps), y_steps < 0)
-    
+        self.move_vertical(abs(y_steps), y_steps < 0)
+
+if __name__ == "__main__":
+    md = MotorsDriver()
+    md.move_motors((124, -188))

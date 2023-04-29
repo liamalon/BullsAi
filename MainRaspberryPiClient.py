@@ -2,6 +2,7 @@
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from MotorDriver.MotorsDriver import MotorsDriver
+from GunHandler.GunHandler import Gun
 import numpy as np
 import struct
 import sys
@@ -28,6 +29,7 @@ class ImageTransfer:
         self.params = [cv2.IMWRITE_JPEG_QUALITY, FRAME_QUALITY]
         self.num_frames = 0
         self.motors_driver = MotorsDriver()
+        self.gun = Gun()
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -64,6 +66,12 @@ class ImageTransfer:
         print("Num steps:", steps, end ="\r")
         
         self.motors_driver.move_motors(steps)
+
+    def fire(self):
+        """
+        Fires the gun
+        """
+        self.gun.fire()
     
     def handle_server(self) -> None:
         """
@@ -84,6 +92,10 @@ class ImageTransfer:
 
                     # Recv steps
                     self.recv_steps(data)
+
+                if code == b"FIREG":
+                    self.recv_steps(data)
+                    self.fire()
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)

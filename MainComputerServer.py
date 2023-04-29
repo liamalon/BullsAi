@@ -12,6 +12,7 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 NUM_FRAMES_TO_DETECT: int = 5
+NUM_FRAMES_TO_DETECT_TO_FIRE: int = 6
 
 class ImageDetection:
     """
@@ -143,8 +144,20 @@ class ImageDetection:
             steps_tuple (tuple): num of steps, is none by defualt
         """
 
+        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):
+            if steps_tuple is None:
+                # Get num steps
+                steps_tuple = self.calc_num_steps()
+            
+            # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
+            # is for the number of elements and i is for their type (integer)
+            msg = b'FIREG' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
+
+            # Send
+            self.server.send_msg(msg, addr, False)
+
         # Check if time to send ai detection
-        if not (self.num_frames % NUM_FRAMES_TO_DETECT):
+        elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -155,6 +168,18 @@ class ImageDetection:
 
             # Send
             self.server.send_msg(msg, addr, False)
+    
+    def send_fire(self, addr: tuple) -> None:
+        """
+        Sends fire to the client
+
+        Args:
+            addr (tuple): addres of the client to send to
+        """
+        msg = b'FIREG' + bytearray(struct.pack(f'{len((0, 0))}i', *(0, 0)))
+
+        # Send
+        self.server.send_msg(msg, addr, False)
 
 
 if __name__ == "__main__":

@@ -154,8 +154,6 @@ class AutoControlScreen(Screen):
         image_detection_thread = threading.Thread(target = self.image_detection.handle_recv)
         image_detection_thread.start()
 
-        
-
         # Set image widget
         self.img = Image()
         self.add_widget(self.img)
@@ -189,7 +187,7 @@ class HumanControlScreen(Screen):
             joystick = pygame.joystick.Joystick(0)
 
         else:
-            raise Exception("Controller is not connected. Please connect controller")
+            print("Controller is not connected. Please connect controller")
         
         super().__init__(**kw)
 
@@ -216,7 +214,7 @@ class HumanControlScreen(Screen):
             addr (tuple): address of the client
         """
         if self.shm[2] == 1:
-            print("Shot")
+            self.image_detection.send_fire(addr)
 
     def move(self, steps_horizntal: int, steps_vertical: int, addr: tuple):
         """
@@ -255,6 +253,7 @@ class HumanControlScreen(Screen):
 
         controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
 
+        # Give the shared memory time to set up
         time.sleep(2)
 
         self.shm = shared_memory.ShareableList(name="controller_mem")  # TOO SLOW 
@@ -284,7 +283,7 @@ screens = [StartScreen(name="StartScreen"), AuthenticationScreen(name="Authentic
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "HumanControlScreen"
+window_manger.current = "AutoControlScreen"
 if __name__ == "__main__":
     startApp()
 

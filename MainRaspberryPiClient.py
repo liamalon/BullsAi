@@ -32,6 +32,7 @@ class ImageTransfer:
         self.motors_driver = MotorsDriver()
         self.gun = Gun()
         self.gun_thread = None
+        self.steps = (0, 0)
         self.run = True
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
@@ -80,7 +81,7 @@ class ImageTransfer:
         while self.run:
             if self.steps != (0, 0):
                 self.motors_driver.move_motors(self.steps)
-            self.steps = (0, 0)
+                self.steps = (0, 0)
 
     def fire(self):
         """

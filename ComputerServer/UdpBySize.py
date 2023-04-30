@@ -7,7 +7,7 @@ SIZE_HEADER_FORMAT = "000000000|"
 LEN_SIZE_HEADER = len(SIZE_HEADER_FORMAT) 
 
 # Bool for debugging
-TCP_DEBUG = False 
+UDP_DEBUG = True 
 
 # Max len to print
 LEN_TO_PRINT = 100
@@ -56,7 +56,7 @@ class UdpBySize:
                 data += _d
 
         # Debugging
-        if  TCP_DEBUG and size_header != b'':
+        if  UDP_DEBUG and size_header != b'':
             print ("\nRecv(%s)>>>" % (size_header, ), end='')
             print ("%s"%(data[:min(len(data), LEN_TO_PRINT)], ))
 
@@ -92,7 +92,7 @@ class UdpBySize:
         sock.sendto(bdata, addr)
 
         # Debugging
-        if TCP_DEBUG and  len_data > 0:
+        if UDP_DEBUG and  len_data > 0:
             print ("\nSent(%s)>>>" % (len_data, ), end='')
             print ("%s"%(bdata[:min(len(bdata), LEN_TO_PRINT)],))
 

@@ -7,10 +7,12 @@ from GunHandler.GunHandler import Gun
 import numpy as np
 import struct
 import sys
+import socket
 import cv2
 
 FRAME_QUALITY = 15
 NUM_FRAMES_TO_DETECT = 10
+TIMEOUT_TIME = 1
 
 class ImageTransfer:
     """
@@ -103,21 +105,26 @@ class ImageTransfer:
 
             # Check if it is a time to get ai detection
             if not (self.num_frames % NUM_FRAMES_TO_DETECT):
+                # Set socket timeout
+                self.udp_client.socket.settimeout(TIMEOUT_TIME)
 
-                # Recv detection from server
-                code, data, addr = self.udp_client.recv_msg()
+                try:
+                    # Recv detection from server
+                    code, data, addr = self.udp_client.recv_msg()
 
-                # Check if msg code is steps
-                if code == b"STEPS":
+                    # Check if msg code is steps
+                    if code == b"STEPS":
 
-                    # Recv steps
-                    self.recv_steps(data)
+                        # Recv steps
+                        self.recv_steps(data)
 
-                elif code == b"FIREG":
-                    if self.gun_thread is not None:
-                        self.gun_thread.join()
-                    self.recv_steps(data)
-                    self.fire()
+                    elif code == b"FIREG":
+                        if self.gun_thread is not None:
+                            self.gun_thread.join()
+                        self.recv_steps(data)
+                        self.fire()
+                except socket.timeout:
+                    print("Socket timedout sending frame again...")
 
         # Avoid thread zombies 
         motors_thread.join()

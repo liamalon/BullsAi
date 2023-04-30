@@ -93,7 +93,7 @@ class ImageTransfer:
         """
         Handles networking with server
         """
-        motors_thread = threading.Thread(self.move_motors)
+        motors_thread = threading.Thread(target=self.move_motors)
         motors_thread.start()
 
         while self.run:
@@ -117,7 +117,7 @@ class ImageTransfer:
                         self.gun_thread.join()
                     self.recv_steps(data)
                     self.fire()
-                    
+
         # Avoid thread zombies 
         motors_thread.join()
 

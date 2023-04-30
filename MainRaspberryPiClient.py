@@ -31,6 +31,8 @@ class ImageTransfer:
         self.num_frames = 0
         self.motors_driver = MotorsDriver()
         self.gun = Gun()
+        self.gun_thread = None
+        self.run = True
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -61,29 +63,40 @@ class ImageTransfer:
             data (bytearray): the date from server
         """
         # Need to unpack in order to get the steps tuple
-        steps = struct.unpack('2i', data)
+        self.steps = struct.unpack('2i', data)
 
         # Debugging
-        print("Num steps:", steps, "\t", end ="\r")
+        print("Num steps:", self.steps, "\t", end ="\r")
 
-        # Removed threading - caused motor problems
-        # t_move = threading.Thread(target=self.motors_driver.move_motors, args=(steps, ))
-        # t_move.start()
-
-        self.motors_driver.move_motors(steps)
+    def move_motors(self) -> None:
+        """
+        Move the motors async to avoid lags with camera
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+        while self.run:
+            if self.steps != (0, 0):
+                self.motors_driver.move_motors(self.steps)
+            self.steps = (0, 0)
 
     def fire(self):
         """
         Fires the gun
         """
-        t_gun = threading.Thread(target=self.gun.fire)
-        t_gun.start()
+        self.gun_thread = threading.Thread(target=self.gun.fire)
+        self.gun_thread.start()
     
     def handle_server(self) -> None:
         """
         Handles networking with server
         """
-        while True:
+        motors_thread = threading.Thread(self.move_motors)
+        motors_thread.start()
+
+        while self.run:
             # Send frame to server
             self.send_frame()
 
@@ -99,9 +112,14 @@ class ImageTransfer:
                     # Recv steps
                     self.recv_steps(data)
 
-                if code == b"FIREG":
+                elif code == b"FIREG":
+                    if self.gun_thread is not None:
+                        self.gun_thread.join()
                     self.recv_steps(data)
                     self.fire()
+                    
+        # Avoid thread zombies 
+        motors_thread.join()
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)

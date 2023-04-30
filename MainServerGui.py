@@ -1,7 +1,5 @@
-import kivy
 __author__ = "Liam Alon"
 __date__ = "25/02/2022"
-import os
 import threading
 from kivy.app import App
 from kivy.lang import Builder
@@ -17,13 +15,10 @@ from kivy.uix.image import Image
 from kivy.clock import Clock
 import cv2
 from kivy.graphics.texture import Texture
-import sys
 
 import pygame
 
 from pygame.locals import *
-
-import multiprocessing
 
 from multiprocessing import shared_memory
 

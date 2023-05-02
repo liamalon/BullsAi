@@ -5,8 +5,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
+from Graphics.Popups import *
 from kivy.core.text import LabelBase    
 import random
 from ComputerServer.UdpServer import UdpServer
@@ -16,6 +15,7 @@ from kivy.clock import Clock
 import cv2
 from kivy.graphics.texture import Texture
 
+from ComputerServer.MailSender import MailSender, MSG_PLACE_HOLDER, EMAIL_TAMPLATE
 import pygame
 
 from pygame.locals import *
@@ -35,20 +35,11 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
+CODES = []
+
 # Load font 
 LabelBase.register(name= "txt_font",
     fn_regular= "Graphics\\assets\\font.ttf")
-
-def server_up_popup():
-    """
-    Popup if server waiting for client
-    """
-    pop = Popup(title='Waiting on client',
-                  content=Label(text='Waiting on client. Server Up...'),
-                  size_hint=(None, None), size=(400, 400))
-    pop.open()
-
-
 
 kv = Builder.load_file("Graphics\\assets\\graphics.kv")
 
@@ -57,6 +48,7 @@ def change_window(window_name):
 
 class WindowManager(ScreenManager):
     pass
+
 window_manger = WindowManager()
 
 class Gui(App):
@@ -77,31 +69,72 @@ class StartScreen(Screen):
     Start screen class is the graphic presention
     of the start screen 
     """
-    def NextWindow(self):
+
+    def next_window(self):
         """
         When the user presses enter it goes to the next window
         """
-        change_window("OptionsScreen")
+        change_window("EmailScreen")
 
-class AuthenticationScreen(Screen):
+class EmailScreen(Screen):
     """
-    AuthenticationScreen is a class that will handle 
-    sending and receiving email authentication
+    Gets user mail and sens a code to the mail
+    """
+    user_mail = ObjectProperty(None)
+    email_login = "cyber.ophir@gmail.com"
+    password_login = "xOMyL2qaJ0tAPKZ7"
+
+    def generate_code(self) -> str:
+        """
+        Generates code to authenticate user
+        """
+        return str(random.randint(100000, 999999))
+
+    def send_code(self) -> None:
+        """
+        Sends code to users email
+        """
+        global CODES
+        code = self.generate_code()
+        self.send_mail(code)
+        CODES.append(code)
+
+    def send_mail(self, msg: str) -> None:
+        """
+        Sends a mail to the user's mail
+        """
+        full_msg = EMAIL_TAMPLATE.replace(MSG_PLACE_HOLDER, msg)
+        mail_args=(
+            self.email_login,
+            self.password_login,
+            self.user_mail.text, 
+            "BullsAi one time authentication code", 
+            full_msg
+        )
+        print("Code: ", msg)
+        sent_email_popup()
+        email_thread = threading.Thread(target=MailSender.send_email, args=mail_args)
+        email_thread.start()
+        change_window("CodeScreen")
+        
+class CodeScreen(Screen):
+    """
+    CodeScreen is a class that will handle 
+    user authentication based on code that was sent to the user's email
     """
     
-    user_mail = ObjectProperty(None)
     user_code = ObjectProperty(None)
-    code = 0 
 
     def check_code(self):
-        if self.user_code.text == str(self.code):
-            self.code = 0
+        """
+        Checks if code is valid
+        """
+        if self.user_code.text in CODES:
+            CODES.remove(self.user_code.text)
             change_window("OptionsScreen")
+        else:
+            wrong_code_popup()
         
-    def send_code(self):
-        self.code = random.randint(100000, 999999)
-        pass
-
 class OptionsScreen(Screen):
     """
     Options Screen class is in charge of 
@@ -274,11 +307,11 @@ class HumanControlScreen(Screen):
         
         return super().on_leave(*args)
         
-screens = [StartScreen(name="StartScreen"), AuthenticationScreen(name="AuthenticationScreen"), OptionsScreen(name="OptionsScreen"), AutoControlScreen(name="AutoControlScreen"), HumanControlScreen(name="HumanControlScreen")]
+screens = [StartScreen(name="StartScreen"), EmailScreen(name="EmailScreen"), CodeScreen(name="CodeScreen"), OptionsScreen(name="OptionsScreen"), AutoControlScreen(name="AutoControlScreen"), HumanControlScreen(name="HumanControlScreen")]
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "AutoControlScreen"
+window_manger.current = "StartScreen"
 if __name__ == "__main__":
     startApp()
 

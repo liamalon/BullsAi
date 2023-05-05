@@ -8,9 +8,6 @@ import cv2
 import time
 
 FPS_BATCH: int = 20
-PORT: int = 8888
-CODE_LEN: int = 5
-STEP_SIZE: int = 1
 NUM_FRAMES_TO_DETECT: int = 10
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 12
 
@@ -181,10 +178,4 @@ class ImageDetection:
         # Send
         self.server.send_msg(msg, addr, False)
 
-
-if __name__ == "__main__":
-    us = UdpServer(PORT, CODE_LEN)
-    us.start_server()
-    id = ImageDetection(us, STEP_SIZE)
-    id.handle_recv()
 

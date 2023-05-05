@@ -26,8 +26,9 @@ import subprocess
 
 import time
 
-SPEED: int = 5
 SHOOT_BUTTON: int = 10 # R1
+
+# initializing pygame and pygame controller
 pygame.init()
 pygame.joystick.init()
 

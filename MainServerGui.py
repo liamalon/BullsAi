@@ -26,6 +26,8 @@ import subprocess
 
 import time
 
+from Security.SecurityTools import hash_str, genrate_salt
+
 SHOOT_BUTTON: int = 10 # R1
 
 # initializing pygame and pygame controller
@@ -37,6 +39,8 @@ CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
 CODES = []
+
+LOCK = threading.Lock()
 
 # Load font 
 LabelBase.register(name= "txt_font",
@@ -114,7 +118,10 @@ class EmailScreen(Screen):
         global CODES
         code = self.generate_code()
         self.send_mail(code)
-        CODES.append(code)
+        LOCK.acquire()
+        salt = genrate_salt()
+        CODES.append((hash_str(code+salt), salt))
+        LOCK.release()
 
     def send_mail(self, msg: str) -> None:
         """
@@ -146,9 +153,14 @@ class CodeScreen(Screen):
         """
         Checks if code is valid
         """
-        if self.user_code.text in CODES:
-            CODES.remove(self.user_code.text)
-            change_window("OptionsScreen")
+        for code, salt in CODES:
+            hashed_salt = hash_str(self.user_code.text + salt)
+            if hashed_salt == code:
+                LOCK.acquire()
+                CODES.remove((code, salt))
+                LOCK.release()
+                change_window("OptionsScreen")
+                return
         else:
             wrong_code_popup()
         

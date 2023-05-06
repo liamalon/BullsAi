@@ -52,6 +52,22 @@ class WindowManager(ScreenManager):
 
 window_manger = WindowManager()
 
+global_server = None
+
+def start_global_server():
+    """
+    Instead of creating a server for each option
+    we create a server for both, lets us change options easly
+    """
+    global global_server
+    if not global_server:
+        # Start server 
+        udp_server = UdpServer(PORT, CODE_LEN)
+        udp_server.start_server()
+
+        # Start Image detection class
+        global_server = ImageDetection(udp_server, STEP_SIZE)
+
 class Gui(App):
     """
     Main app
@@ -159,7 +175,15 @@ class AutoControlScreen(Screen):
     of the user when not in control
     """
     def update_frame(self, dt):
-        frame = self.image_detection.frame
+        """
+        Updates frame 
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        frame = global_server.frame
         if frame is None:
             return
         # Flip the frame 180 degrees
@@ -169,18 +193,26 @@ class AutoControlScreen(Screen):
         self.img.texture = texture
 
     def on_enter(self, *args):
+        """
+        When enters this screen this function is called 
+        Args:
+            *args
 
-        # Start server 
-        udp_server = UdpServer(PORT, CODE_LEN)
-        udp_server.start_server()
+        Returns:
+            None
+        """
+        global global_server
+
+        start_global_server()
+
+        global_server.handshake()
+
+        global_server.running = True
 
         # Pop up
         server_up_popup()
 
-        # Start Image detection class
-        self.image_detection = ImageDetection(udp_server, STEP_SIZE)
-
-        image_detection_thread = threading.Thread(target = self.image_detection.handle_recv)
+        image_detection_thread = threading.Thread(target = global_server.handle_recv)
         image_detection_thread.start()
 
         # Set image widget
@@ -191,14 +223,35 @@ class AutoControlScreen(Screen):
         return super().on_enter(*args)
     
     def on_leave(self, *args):
-        self.image_detection.running = False
-
+        """
+        When leaving this screen this function is called
+        Args:
+            *args
+        
+        Returns:
+            None
+        """
         # Remove image widget
         Clock.unschedule(self.update_frame)
-        self.capture.release()
         self.remove_widget(self.img)
-        
         return super().on_leave(*args)
+
+    def exit_button(self):
+        """
+        When exit button is pressed on it switches to the options screen
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+        global_server.send_exit()
+        self.wait_for_exit()
+
+    def wait_for_exit(self):
+        while global_server.exit:
+            pass
+        change_window("OptionsScreen")
     
 class HumanControlScreen(Screen):
     """
@@ -211,6 +264,8 @@ class HumanControlScreen(Screen):
         self.clock = pygame.time.Clock()
 
         self.motion = [0, 0]
+
+        self.running = True
 
         if pygame.joystick.get_count() > 0:
             joystick = pygame.joystick.Joystick(0)
@@ -225,15 +280,17 @@ class HumanControlScreen(Screen):
         Handels all of the pygame events. Button press and joystick move
         """
 
-        while True:
+        while self.running:
             try:
-                data, addr = self.image_detection.server.recv_frame()
-                self.image_detection.set_frame(data)
-                steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
+                data, addr = global_server.server.recv_frame()
+                global_server.set_frame(data)
+                # steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
+                steps_horizntal, steps_vertical = 0, 0
                 self.move(steps_horizntal, steps_vertical, addr)
                 self.shot(addr)
-            except:
-                print("error")
+                self.addr = addr
+            except Exception as e:
+                print("Got exception: ", e)
             
     def shot(self, addr: tuple):
         """
@@ -243,7 +300,7 @@ class HumanControlScreen(Screen):
             addr (tuple): address of the client
         """
         if self.shm[2] == 1:
-            self.image_detection.send_fire(addr)
+            global_server.send_fire(addr)
 
     def move(self, steps_horizntal: int, steps_vertical: int, addr: tuple):
         """
@@ -257,10 +314,18 @@ class HumanControlScreen(Screen):
         # If they are both 0 it means there is no need to move
         # So no need to send new location to the client
         
-        self.image_detection.send_steps(addr , (steps_horizntal, steps_vertical))
+        global_server.send_steps(addr , (steps_horizntal, steps_vertical))
 
     def update_frame(self, dt):
-        frame = self.image_detection.frame
+        """
+        Updates frame 
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        frame = global_server.frame
         if frame is None:
             return
         # Flip the frame 180 degrees
@@ -270,15 +335,23 @@ class HumanControlScreen(Screen):
         self.img.texture = texture
 
     def on_enter(self, *args):
-        # Start server 
-        udp_server = UdpServer(PORT, CODE_LEN)
-        udp_server.start_server()
+        """
+        When enters this screen this function is called 
+        Args:
+            *args
+
+        Returns:
+            None
+        """
+
+        global_server.handshake()
+
+        start_global_server()
+
+        self.running = True
 
         # Pop up
         server_up_popup()
-
-        # Start Image detection class
-        self.image_detection = ImageDetection(udp_server, STEP_SIZE)
 
         controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
 
@@ -288,8 +361,8 @@ class HumanControlScreen(Screen):
         self.shm = shared_memory.ShareableList(name="controller_mem")  # TOO SLOW 
 
         # Start steps sending thread
-        steps_thread = threading.Thread(target=self.send_steps)
-        steps_thread.start()
+        self.steps_thread = threading.Thread(target=self.send_steps)
+        self.steps_thread.start()
 
         # Set image widget
         self.img = Image()
@@ -299,14 +372,37 @@ class HumanControlScreen(Screen):
         return super().on_enter(*args)
     
     def on_leave(self, *args):
-        self.image_detection.running = False
-
+        """
+        When leaving this screen this function is called
+        Args:
+            *args
+        
+        Returns:
+            None
+        """
         # Remove image widget
         Clock.unschedule(self.update_frame)
-        self.capture.release()
         self.remove_widget(self.img)
-        
+        self.steps_thread.join()
         return super().on_leave(*args)
+
+    def exit_button(self):
+        """
+        When exit button is pressed on it switches to the options screen
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+        global_server.force_exit()
+        self.running = False
+        self.wait_for_exit()
+
+    def wait_for_exit(self):
+        while global_server.exit:
+            pass
+        change_window("OptionsScreen")
         
 screens = [StartScreen(name="StartScreen"), EmailScreen(name="EmailScreen"), CodeScreen(name="CodeScreen"), OptionsScreen(name="OptionsScreen"), AutoControlScreen(name="AutoControlScreen"), HumanControlScreen(name="HumanControlScreen")]
 for screen in screens:

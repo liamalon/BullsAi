@@ -52,6 +52,12 @@ class ImageDetection:
         # Indicates if the server is running or not
         self.running = True
 
+        # Current client addr
+        self.addr = None
+
+        # Exit connection or not
+        self.exit = False
+
     def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
         Get raw data from client, turns it into 
@@ -107,6 +113,7 @@ class ImageDetection:
         """
         while self.running:
             data, addr = self.server.recv_frame()
+            self.addr = addr
             self.set_frame(data)
             self.send_steps(addr)
 
@@ -142,6 +149,10 @@ class ImageDetection:
         """
 
         if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):
+            if self.exit:
+                self.__send_exit()
+                return
+
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -155,6 +166,10 @@ class ImageDetection:
 
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
+            if self.exit:
+                self.__send_exit()
+                return
+                
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -177,5 +192,42 @@ class ImageDetection:
 
         # Send
         self.server.send_msg(msg, addr, False)
+    
+    def send_exit(self) -> None:
+        """
+        Sets exit to true in order to exit in the next round 
+        """
+        self.exit = True
+    
+    def __send_exit(self) -> None:
+        """
+        Sends exit to the client
+        """
 
+        self.running = False
+        
+        msg = b'EXITC' 
+
+        # Reset num steps
+        self.num_frames = 0
+
+        # Send
+        self.server.send_msg(msg, self.addr, False)
+
+        self.exit = False
+    
+    def force_exit(self):
+        """
+        Force sending exit to client
+        """
+        self.__send_exit()
+
+    def handshake(self) -> None:
+        """
+        Handshake to start communication
+        """
+        print("Waiting for start")
+        code, data, addr = self.server.recv_msg()
+        print("Got start")
+        self.server.send_msg(b"START", addr, False)
 

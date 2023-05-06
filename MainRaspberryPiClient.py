@@ -36,6 +36,7 @@ class ImageTransfer:
         self.gun_thread = None
         self.steps = (0, 0)
         self.run = True
+        self.alive = True
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -91,43 +92,83 @@ class ImageTransfer:
         """
         self.gun_thread = threading.Thread(target=self.gun.fire)
         self.gun_thread.start()
+
+    def handshake(self):
+        """
+        Handshake to start communication
+        """
+        # Send start code to server
+        self.udp_client.send_msg(b"START", False)
+
+        print("Sent start")
+        
+        # Reset socket timeout
+        self.udp_client.socket.settimeout(None)
+
+        # Recv ack from server
+        code, data, addr = self.udp_client.recv_msg()
+
+    def reset_client(self):
+        """
+        Reset importent variables
+        """
+        self.run = False
+        self.num_frames = 0
+        # self.enemy_detector.release_camera()
     
     def handle_server(self) -> None:
         """
         Handles networking with server
         """
-        motors_thread = threading.Thread(target=self.move_motors)
-        motors_thread.start()
+        # First loop is to keep client alive at all time and waiting to start communication
+        while self.alive:   
+            # Handshake with server
+            self.handshake()
 
-        while self.run:
-            # Send frame to server
-            self.send_frame()
+            # Motors moving thread
+            motors_thread = threading.Thread(target=self.move_motors)
+            motors_thread.start()
 
-            # Check if it is a time to get ai detection
-            if not (self.num_frames % NUM_FRAMES_TO_DETECT):
-                # Set socket timeout
-                self.udp_client.socket.settimeout(TIMEOUT_TIME)
+            # Set run to True in order to run the inside loop
+            self.run = True
 
-                try:
-                    # Recv detection from server
-                    code, data, addr = self.udp_client.recv_msg()
+            # Second loop is for the communication itself
+            while self.run:
+                # Send frame to server
+                self.send_frame()
 
-                    # Check if msg code is steps
-                    if code == b"STEPS":
+                # Check if it is a time to get ai detection
+                if not (self.num_frames % NUM_FRAMES_TO_DETECT):
+                    # Set socket timeout
+                    self.udp_client.socket.settimeout(TIMEOUT_TIME)
 
-                        # Recv steps
-                        self.recv_steps(data)
+                    try:
+                        # Recv detection from server
+                        code, data, addr = self.udp_client.recv_msg()
 
-                    elif code == b"FIREG":
-                        if self.gun_thread is not None:
-                            self.gun_thread.join()
-                        self.recv_steps(data)
-                        self.fire()
-                except socket.timeout:
-                    print("Socket timedout sending frame again...")
+                        # Check if msg code is steps
+                        if code == b"STEPS":
+                            # Recv steps
+                            self.recv_steps(data)
 
-        # Avoid thread zombies 
-        motors_thread.join()
+                        elif code == b"FIREG":
+                            if self.gun_thread is not None:
+                                self.gun_thread.join()
+                            self.recv_steps(data)
+                            self.fire()
+                        
+                        elif code == b'EXITC':
+                            print("Exiting")
+                            self.reset_client()
+
+                    except socket.timeout:
+                        print("Socket timedout sending frame again...")
+
+                if self.gun_thread is not None:
+                    self.gun_thread.join()
+
+            # Avoid thread zombies 
+            motors_thread.join()
 
 if __name__ == "__main__":
     udp_client = UdpClient(sys.argv[1], 8888, 5)

@@ -113,6 +113,12 @@ class EnemyDetection:
         # For the pic to show
         cv2.waitKey(1)
     
+    def release_camera(self):
+        """
+        When done using camera, realse it
+        """
+        self.camera.release()
+    
     
 
         

@@ -284,8 +284,7 @@ class HumanControlScreen(Screen):
             try:
                 data, addr = global_server.server.recv_frame()
                 global_server.set_frame(data)
-                # steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
-                steps_horizntal, steps_vertical = 0, 0
+                steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
                 self.move(steps_horizntal, steps_vertical, addr)
                 self.shot(addr)
                 self.addr = addr
@@ -344,9 +343,9 @@ class HumanControlScreen(Screen):
             None
         """
 
-        global_server.handshake()
-
         start_global_server()
+                
+        global_server.handshake()
 
         self.running = True
 
@@ -411,5 +410,3 @@ for screen in screens:
 window_manger.current = "StartScreen"
 if __name__ == "__main__":
     startApp()
-
-     

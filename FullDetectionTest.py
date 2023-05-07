@@ -1,5 +1,5 @@
-from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
-from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
+from .ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
+from .ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import cv2, os
 import numpy as np
 if __name__ == "__main__":
@@ -18,9 +18,10 @@ if __name__ == "__main__":
                 y = person[1]
                 w = person[2]
                 h = person[3]
-                cv2.rectangle(frame, (x, y), (w, h), (0, 255, 255), 2)    
                 
                 center = et.get_center_of_people(person)
+                
+                cv2.rectangle(frame, (x, y), (w, h), (0, 255, 255), 2)    
                 # Lazer dot
                 cv2.circle(frame, center, 5, (0, 0, 255), 5)
             # Show the frame

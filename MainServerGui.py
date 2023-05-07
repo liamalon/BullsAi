@@ -42,6 +42,8 @@ CODES = []
 
 LOCK = threading.Lock()
 
+YELLOW = (0, 255, 255)
+
 # Load font 
 LabelBase.register(name= "txt_font",
     fn_regular= "Graphics\\assets\\font.ttf")
@@ -186,6 +188,8 @@ class AutoControlScreen(Screen):
     AutoControl screen class is for the gui 
     of the user when not in control
     """
+    DRAW_BOX: bool = True
+
     def update_frame(self, dt):
         """
         Updates frame 
@@ -200,6 +204,12 @@ class AutoControlScreen(Screen):
             return
         # Flip the frame 180 degrees
         frame = cv2.flip(frame, -1)
+
+        if self.DRAW_BOX and global_server.person_bounding:
+            print(global_server.person_bounding)
+            x, y, w, h, c = global_server.person_bounding
+            cv2.rectangle(frame, (x, y), (w, h), YELLOW, 2)    
+
         texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
         texture.blit_buffer(frame.tobytes(), colorfmt='bgr', bufferfmt='ubyte')
         self.img.texture = texture
@@ -427,6 +437,6 @@ screens = [
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "StartScreen"
+window_manger.current = "AutoControlScreen"
 if __name__ == "__main__":
     startApp()

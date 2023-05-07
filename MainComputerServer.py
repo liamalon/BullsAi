@@ -57,6 +57,9 @@ class ImageDetection:
 
         # Exit connection or not
         self.exit = False
+        
+        # Red shirt man bounding
+        self.person_bounding = (0, 0, 0, 0, 0)
 
     def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
@@ -133,8 +136,9 @@ class ImageDetection:
         if person != ():
             # Divide the width and height by 2 
             # in order to get the center of the screen
+            self.person_bounding = person
             return self.enemy_targeting.get_steps_to_people_center(self.window_width // 2, self.window_height // 2, person)
-        
+        self.person_bounding = (0, 0, 0, 0, 0)
         # If there isnt a person it should'nt move
         return (0, 0)       
 

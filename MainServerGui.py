@@ -36,7 +36,7 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
-STEP_SIZE_FIXER = 20
+STEP_SIZE_FIXER = 35
 
 CODES = []
 
@@ -448,3 +448,4 @@ if __name__ == "__main__":
 # TODO: way client stopping when shoting
 # TODO: change consst when human control
 # TODO: add com=nst to auto control
+# TODO: change time to recive steps

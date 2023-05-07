@@ -32,6 +32,7 @@ class UdpServer:
         Starts server listen and accept
         """
         self.socket.bind((DEFUALT_LISTEN_IP, self.port))
+        print("Started server...")
     
     def send_msg(self, data: Any, addr: tuple, to_encode:bool = False) -> None:
         """
@@ -69,6 +70,5 @@ class UdpServer:
         """
 
         data, address = self.socket.recvfrom(BUFF_SIZE)
-        
         return data, address
 

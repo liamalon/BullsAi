@@ -1,4 +1,4 @@
-import threading
+from multiprocessing import Process
 import time
 import board
 from adafruit_motor import stepper
@@ -15,13 +15,17 @@ class MotorsDriver:
         self.horizontal_motor = self.kit.stepper1
         self.vertical_motor = self.kit.stepper2
         self.directions = [stepper.FORWARD, stepper.BACKWARD]
+        self.released = False
 
     def __del__(self):
         """
         Releases the motors when not in use
         """
-        self.horizontal_motor.release()
-        self.vertical_motor.release()
+        if not self.released:
+            self.horizontal_motor.release()
+            self.vertical_motor.release()
+            self.released = True
+        print("Released motors...")
 
     def move_horizontal(self, num_steps:int, backwards=False) -> None:
         """
@@ -61,7 +65,15 @@ class MotorsDriver:
         """
         x_steps = steps_tuple[0]
         y_steps = steps_tuple[0]
+        
+        horizontal_thread = Process(target=self.move_horizontal, args=(abs(x_steps), x_steps < 0))
+        vertical_thread = Process(target=self.move_vertical, args=(abs(y_steps), y_steps < 0))
 
-        self.move_horizontal(abs(x_steps), x_steps < 0)
-        self.move_vertical(abs(y_steps), y_steps < 0)
+        # Starting new processes for each motor
+        horizontal_thread.start()
+        vertical_thread.start()
+
+        # Waiting for them to end
+        horizontal_thread.join()
+        vertical_thread.join()
 

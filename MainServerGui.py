@@ -38,6 +38,8 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
+STEP_SIZE_FIXER = 10
+
 CODES = []
 
 LOCK = threading.Lock()
@@ -306,10 +308,10 @@ class HumanControlScreen(Screen):
             try:
                 data, addr = global_server.server.recv_frame()
                 global_server.set_frame(data)
-                steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
+                steps_horizntal, steps_vertical = self.shm[0] * STEP_SIZE_FIXER, self.shm[1] * STEP_SIZE_FIXER
                 self.move(steps_horizntal, steps_vertical, addr)
                 self.shot(addr)
-                self.addr = addr
+                global_server.addr = addr
             except Exception as e:
                 print("Got exception: ", e)
             
@@ -322,6 +324,7 @@ class HumanControlScreen(Screen):
         """
         if self.shm[2] == 1:
             global_server.send_fire(addr)
+            print("Fire!")
 
     def move(self, steps_horizntal: int, steps_vertical: int, addr: tuple):
         """
@@ -440,3 +443,10 @@ for screen in screens:
 window_manger.current = "OptionsScreen"
 if __name__ == "__main__":
     startApp()
+
+
+# TOFIX : filter low steps (20 and above) 
+# TOFIX: check if async moving motors works
+# TODO: way client stopping when shoting
+# TODO: change consst when human control
+# TODO: add com=nst to auto control

@@ -10,6 +10,7 @@ import time
 FPS_BATCH: int = 20
 NUM_FRAMES_TO_DETECT: int = 10
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 12
+STEP_SIZE_THRESHOLD: int = 20 
 
 class ImageDetection:
     """
@@ -141,6 +142,20 @@ class ImageDetection:
         self.person_bounding = (0, 0, 0, 0, 0)
         # If there isnt a person it should'nt move
         return (0, 0)       
+    
+    def steps_thresholding(self, steps_tuple: tuple) -> tuple:
+        """
+        Inorder to avoid small steps we filter out any step lower
+        then a certin threshold {STEP_SIZE_THRESHOLD}
+        Args:
+            steps_tuple: (tuple) - steps tuple, (x_steps, y_steps)
+        Returns:
+            filtered_steps_tuple: (tuple) - steps tuple, (x_steps, y_steps)
+        """
+        x_steps = 0 if abs(steps_tuple[0]) < STEP_SIZE_THRESHOLD else steps_tuple[0]
+        y_steps = 0 if abs(steps_tuple[1]) < STEP_SIZE_THRESHOLD else steps_tuple[1]
+        
+        return (x_steps, y_steps)
 
     def send_steps(self, addr: tuple, steps_tuple: tuple = None) -> None:
         """
@@ -151,39 +166,30 @@ class ImageDetection:
             addr (tuple): addres of the client to send to
             steps_tuple (tuple): num of steps, is none by defualt
         """
-
-        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):
-            if self.exit:
+        if self.exit:
                 self.__send_exit()
                 return
 
-            if steps_tuple is None:
-                # Get num steps
-                steps_tuple = self.calc_num_steps()
-            
+        if steps_tuple is None:
+            # Get num steps
+            steps_tuple = self.calc_num_steps()
+
+        # Threshold steps tuple
+        steps_tuple = self.steps_thresholding(steps_tuple)
+        
+        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):            
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'FIREG' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
 
-            # Send
-            self.server.send_msg(msg, addr, False)
-
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
-            if self.exit:
-                self.__send_exit()
-                return
-                
-            if steps_tuple is None:
-                # Get num steps
-                steps_tuple = self.calc_num_steps()
-            
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
 
-            # Send
-            self.server.send_msg(msg, addr, False)
+        # Send
+        self.server.send_msg(msg, addr, False)
     
     def send_fire(self, addr: tuple) -> None:
         """

@@ -36,7 +36,7 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
-STEP_SIZE_FIXER = 10
+STEP_SIZE_FIXER = 20
 
 CODES = []
 

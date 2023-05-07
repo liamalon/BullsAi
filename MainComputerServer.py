@@ -10,7 +10,7 @@ import time
 FPS_BATCH: int = 20
 NUM_FRAMES_TO_DETECT: int = 10
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 12
-STEP_SIZE_THRESHOLD: int = 20 
+STEP_SIZE_THRESHOLD: int = 40 
 
 class ImageDetection:
     """

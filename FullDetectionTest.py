@@ -1,16 +1,15 @@
-from .ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
-from .ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
+from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
+from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import cv2, os
 import numpy as np
 if __name__ == "__main__":
-    ed = EnemyDetection(video_input=0)
+    ed = EnemyDetection(video_input=1)
     et = EnemyTargeting(0)
     while True:
         try:
             frame = ed.get_image()
             params = [cv2.IMWRITE_JPEG_QUALITY, 15]
             _, buffer = cv2.imencode('.jpg', frame, params)
-            print(len(buffer))
             frame = cv2.imdecode(np.frombuffer(buffer, np.uint8), cv2.IMREAD_COLOR)
             person = ed.get_people_from_image(frame)
             if person != ():

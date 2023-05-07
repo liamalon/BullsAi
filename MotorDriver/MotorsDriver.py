@@ -64,7 +64,7 @@ class MotorsDriver:
             None
         """
         x_steps = steps_tuple[0]
-        y_steps = steps_tuple[0]
+        y_steps = steps_tuple[1]
         
         horizontal_thread = Process(target=self.move_horizontal, args=(abs(x_steps), x_steps < 0))
         vertical_thread = Process(target=self.move_vertical, args=(abs(y_steps), y_steps < 0))

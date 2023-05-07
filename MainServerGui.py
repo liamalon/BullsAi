@@ -1,5 +1,3 @@
-__author__ = "Liam Alon"
-__date__ = "25/02/2022"
 import threading
 from kivy.app import App
 from kivy.lang import Builder

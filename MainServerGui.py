@@ -415,7 +415,15 @@ class HumanControlScreen(Screen):
             pass
         change_window("OptionsScreen")
         
-screens = [StartScreen(name="StartScreen"), EmailScreen(name="EmailScreen"), CodeScreen(name="CodeScreen"), OptionsScreen(name="OptionsScreen"), AutoControlScreen(name="AutoControlScreen"), HumanControlScreen(name="HumanControlScreen")]
+screens = [
+        StartScreen(name="StartScreen"), 
+        EmailScreen(name="EmailScreen"), 
+        CodeScreen(name="CodeScreen"), 
+        OptionsScreen(name="OptionsScreen"), 
+        AutoControlScreen(name="AutoControlScreen"), 
+        HumanControlScreen(name="HumanControlScreen")
+    ]
+
 for screen in screens:
     window_manger.add_widget(screen)
 

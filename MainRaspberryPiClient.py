@@ -173,8 +173,13 @@ class ImageTransfer:
 def main():
     udp_client = UdpClient(sys.argv[1], 8888, 5)
     it = ImageTransfer(udp_client, video_input = 0)
-    it.handle_server() 
-
+    try:
+        it.handle_server() 
+    except KeyboardInterrupt:
+        print("Aborting...")
+    except Exception as e:
+        print(f"Exception: {e}")
+    
 
 if __name__ == "__main__":
     main()

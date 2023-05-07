@@ -100,7 +100,7 @@ class ImageTransfer:
         # Send start code to server
         self.udp_client.send_msg(b"START", False)
 
-        print("Sent start")
+        print(f"Sent start to {self.udp_client.server_ip} , {self.udp_client.port}")
         
         # Reset socket timeout
         self.udp_client.socket.settimeout(None)

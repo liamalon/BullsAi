@@ -287,7 +287,8 @@ class HumanControlScreen(Screen):
             try:
                 data, addr = global_server.server.recv_frame()
                 global_server.set_frame(data)
-                steps_horizntal, steps_vertical = self.shm[0] ** HUMAN_SIZE_FIXER, self.shm[1] ** HUMAN_SIZE_FIXER
+                steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
+                steps_horizntal, steps_vertical = (self.shm[0] ** HUMAN_SIZE_FIXER) * (-1 if steps_horizntal < 0 else 1), (self.shm[1] ** HUMAN_SIZE_FIXER) * (-1 if steps_vertical < 0 else 1)
                 self.move(steps_horizntal, steps_vertical, addr)
                 self.shot(addr)
                 global_server.addr = addr

@@ -6,8 +6,8 @@ from pygame.locals import *
 
 from multiprocessing import shared_memory
 
-SPEED = 10
-SHOUT_BUTTON = 10 # R1
+SPEED: int = 5
+SHOUT_BUTTON: int = 10 # R1
 pygame.init()
 pygame.joystick.init()
 
@@ -38,10 +38,10 @@ class ControllerEvents:
                     # Check if R1 was pressed, to shot
                     if event.button == SHOUT_BUTTON:
                         self.shot()
-                    else:
+
+                elif event.type == JOYBUTTONUP:
+                    if event.button == SHOUT_BUTTON:
                         self.shared_list[2] = 0
-                else:
-                    self.shared_list[2] = 0
 
                 # Check if eny joystick moved
                 if event.type == JOYAXISMOTION:

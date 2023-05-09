@@ -72,7 +72,7 @@ class MotorsDriver:
         if steps_tuple == (0,0):
             return
         
-        self.motors_driver.in_use = True
+        self.in_use = True
 
         x_steps = steps_tuple[0]
         y_steps = steps_tuple[1]
@@ -83,7 +83,7 @@ class MotorsDriver:
         # Starting new processes for each motor
         horizontal_thread.start()
         vertical_thread.start()
-        
+
         self.in_use = False
         
         # # Waiting for them to end

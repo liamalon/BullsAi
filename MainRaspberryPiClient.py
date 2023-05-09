@@ -82,7 +82,8 @@ class ImageTransfer:
             None
         """
         while self.run:
-            self.motors_driver.move_motors(self.steps)
+            if not self.motors_driver.in_use:
+                self.motors_driver.move_motors(self.steps)
 
     def fire(self):
         """

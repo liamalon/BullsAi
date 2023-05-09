@@ -6,7 +6,7 @@ from pygame.locals import *
 
 from multiprocessing import shared_memory
 
-SPEED: int = 5
+SPEED: int = 7
 SHOUT_BUTTON: int = 10 # R1
 pygame.init()
 pygame.joystick.init()

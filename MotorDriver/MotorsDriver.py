@@ -3,7 +3,7 @@ import time
 import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
-SLEEP_TIME = 0.005
+SLEEP_TIME = 0.001
 
 class MotorsDriver:
     def __init__(self) -> None:
@@ -39,7 +39,8 @@ class MotorsDriver:
         """
         for step in range(num_steps):
             self.horizontal_motor.onestep(direction=self.directions[backwards])
-            time.sleep(SLEEP_TIME)
+            # In order to help it as a result of an heavy whieght 
+            time.sleep(SLEEP_TIME * 5)
 
     def move_vertical(self, num_steps:int, backwards=False) -> None:
         """

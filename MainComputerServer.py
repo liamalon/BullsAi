@@ -179,7 +179,7 @@ class ImageDetection:
         # Threshold steps tuple
         steps_tuple = self.steps_thresholding(steps_tuple)
 
-        steps_tuple = int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER)
+        steps_tuple = (int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER))
         
         if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):            
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 

@@ -16,6 +16,7 @@ class MotorsDriver:
         self.vertical_motor = self.kit.stepper2
         self.directions = [stepper.FORWARD, stepper.BACKWARD]
         self.released = False
+        self.in_use = False
 
     def __del__(self):
         """
@@ -63,8 +64,11 @@ class MotorsDriver:
         returns:
             None
         """
+        self.in_use = True
         if steps_tuple == (0,0):
+            self.in_use = False
             return
+        
         x_steps = steps_tuple[0]
         y_steps = steps_tuple[1]
         
@@ -78,4 +82,5 @@ class MotorsDriver:
         # Waiting for them to end
         horizontal_thread.join()
         vertical_thread.join()
+        self.in_use = False
 

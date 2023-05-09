@@ -6,7 +6,7 @@ from pygame.locals import *
 
 from multiprocessing import shared_memory
 
-SPEED = 5
+SPEED = 10
 SHOUT_BUTTON = 10 # R1
 pygame.init()
 pygame.joystick.init()
@@ -69,7 +69,6 @@ class ControllerEvents:
         When R1 was preesed send the client a order to shot
         """
         self.shared_list[2] = 1
-        #    self. my_square_color = (self.my_square_color + 1) % len(self.colors)
 
     def move(self, steps_horizntal: int, steps_vertical: int):
         """

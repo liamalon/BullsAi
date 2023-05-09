@@ -28,15 +28,11 @@ from Security.SecurityTools import hash_str, genrate_salt
 
 SHOOT_BUTTON: int = 10 # R1
 
-# initializing pygame and pygame controller
-pygame.init()
-pygame.joystick.init()
-
 PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
-HUMAN_SIZE_FIXER: int = 3
+HUMAN_SIZE_FIXER: int = 2
 
 CODES: list = []
 
@@ -281,22 +277,6 @@ class HumanControlScreen(Screen):
     HumanControl screen class is for the gui 
     of the user when he is in control
     """
-
-    def __init__(self, **kw):
-        global joystick
-        self.clock = pygame.time.Clock()
-
-        self.motion = [0, 0]
-
-        self.running = True
-
-        if pygame.joystick.get_count() > 0:
-            joystick = pygame.joystick.Joystick(0)
-
-        else:
-            print("Controller is not connected. Please connect controller")
-        
-        super().__init__(**kw)
 
     def send_steps(self):
         """

@@ -36,13 +36,13 @@ PORT: int = 8888
 CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
-STEP_SIZE_FIXER = 35
+HUMAN_SIZE_FIXER: int = 3
 
-CODES = []
+CODES: list = []
 
-LOCK = threading.Lock()
+LOCK: threading.Lock = threading.Lock()
 
-YELLOW = (0, 255, 255)
+YELLOW: tuple = (0, 255, 255)
 
 # Load font 
 LabelBase.register(name= "txt_font",
@@ -206,7 +206,6 @@ class AutoControlScreen(Screen):
         frame = cv2.flip(frame, -1)
 
         if self.DRAW_BOX and global_server.person_bounding:
-            print(global_server.person_bounding)
             x, y, w, h, c = global_server.person_bounding
             cv2.rectangle(frame, (x, y), (w, h), YELLOW, 2)    
 
@@ -226,6 +225,8 @@ class AutoControlScreen(Screen):
         global global_server
 
         start_global_server()
+
+        global_server.change_frame_rate()
 
         global_server.handshake()
 
@@ -306,7 +307,7 @@ class HumanControlScreen(Screen):
             try:
                 data, addr = global_server.server.recv_frame()
                 global_server.set_frame(data)
-                steps_horizntal, steps_vertical = self.shm[0] * STEP_SIZE_FIXER, self.shm[1] * STEP_SIZE_FIXER
+                steps_horizntal, steps_vertical = self.shm[0] ** HUMAN_SIZE_FIXER, self.shm[1] ** HUMAN_SIZE_FIXER
                 self.move(steps_horizntal, steps_vertical, addr)
                 self.shot(addr)
                 global_server.addr = addr
@@ -367,6 +368,8 @@ class HumanControlScreen(Screen):
         """
 
         start_global_server()
+
+        global_server.change_frame_rate(1)
                 
         global_server.handshake()
 
@@ -445,7 +448,7 @@ if __name__ == "__main__":
 
 # TOFIX : filter low steps (20 and above) 
 # TOFIX: check if async moving motors works
-# TODO: way client stopping when shoting
+# TOFIX: way client stopping when shoting
 # TODO: change consst when human control
 # TODO: add com=nst to auto control
-# TODO: change time to recive steps
+# TOFIX: change time to recive steps

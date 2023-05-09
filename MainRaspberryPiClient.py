@@ -97,8 +97,9 @@ class ImageTransfer:
         """
         Handshake to start communication
         """
+        global NUM_FRAMES_TO_DETECT
         # Send start code to server
-        self.udp_client.send_msg(b"START", False)
+        self.udp_client.send_msg(b"HNDSH"+b"START", False)
 
         print(f"Sent start to {self.udp_client.server_ip} , {self.udp_client.port}")
         
@@ -107,6 +108,11 @@ class ImageTransfer:
 
         # Recv ack from server
         code, data, addr = self.udp_client.recv_msg()
+
+        NUM_FRAMES_TO_DETECT = int(data.decode())
+
+        print("Num frames changed to: ", NUM_FRAMES_TO_DETECT)
+
 
     def reset_client(self):
         """

@@ -8,9 +8,11 @@ import cv2
 import time
 
 FPS_BATCH: int = 20
-NUM_FRAMES_TO_DETECT: int = 10
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 5
+NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 12
-STEP_SIZE_THRESHOLD: int = 20 
+STEP_SIZE_THRESHOLD: int = 10 
+AUTO_SIZE_FIXER: int = 1.5
 
 class ImageDetection:
     """
@@ -176,11 +178,16 @@ class ImageDetection:
 
         # Threshold steps tuple
         steps_tuple = self.steps_thresholding(steps_tuple)
+
+        steps_tuple = steps_tuple[0] * AUTO_SIZE_FIXER, steps_tuple[1] * AUTO_SIZE_FIXER
         
         if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):            
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'FIREG' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
+
+            # Send
+            self.server.send_msg(msg, addr, False)
 
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
@@ -188,8 +195,8 @@ class ImageDetection:
             # is for the number of elements and i is for their type (integer)
             msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
 
-        # Send
-        self.server.send_msg(msg, addr, False)
+            # Send
+            self.server.send_msg(msg, addr, False)
     
     def send_fire(self, addr: tuple) -> None:
         """
@@ -239,5 +246,14 @@ class ImageDetection:
         print("Waiting for start")
         code, data, addr = self.server.recv_msg()
         print("Got start")
-        self.server.send_msg(b"START", addr, False)
+        self.server.send_msg(b"HNDSH"+str(NUM_FRAMES_TO_DETECT).encode(), addr, False)
+
+    def change_frame_rate(self, new_frame_rate: int = ORIGINNAL_NUM_FRAMES_TO_DETECT):
+        """
+        Changes num of frames to send steps after ai anlasys
+        Args:
+            new_frame_rate: (int) - new frame rate
+        """
+        global NUM_FRAMES_TO_DETECT
+        NUM_FRAMES_TO_DETECT = new_frame_rate
 

@@ -10,7 +10,7 @@ import sys
 import socket
 import cv2
 
-FRAME_QUALITY = 30
+FRAME_QUALITY = 15
 NUM_FRAMES_TO_DETECT = 10
 TIMEOUT_TIME = 1
 

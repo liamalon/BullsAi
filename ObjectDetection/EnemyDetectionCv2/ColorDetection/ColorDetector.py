@@ -1,11 +1,11 @@
 import numpy as np
 import cv2
 
-COLOR_THRESHOLD = 12
+COLOR_THRESHOLD: int = 12
 
-LOWER_RED = [155,25,0]
+LOWER_RED: list = (155,25,0)
 
-UPPER_RED = [179,255,255]
+UPPER_RED: list = (179,255,255)
 
 class ColorDetector:
 

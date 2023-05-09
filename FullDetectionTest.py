@@ -3,7 +3,7 @@ from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
 import cv2, os
 import numpy as np
 if __name__ == "__main__":
-    ed = EnemyDetection(video_input=1)
+    ed = EnemyDetection(video_input=0)
     et = EnemyTargeting(0)
     while True:
         try:

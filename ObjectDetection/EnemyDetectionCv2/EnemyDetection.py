@@ -3,7 +3,7 @@ import numpy as np
 from typing import Tuple
 from ObjectDetection.EnemyDetectionCv2.ColorDetection.ColorDetector import ColorDetector
 import os
-
+CONFIDENCE_THRESHOLD: float = 0.8
 class EnemyDetection:
     """
     EnemyDetection is a class that is in charge
@@ -81,7 +81,7 @@ class EnemyDetection:
         # Loop over the detections
         for people in range(detections.shape[2]):
             confidence = detections[0, 0, people, 2]
-            if confidence > 0.9:
+            if confidence > CONFIDENCE_THRESHOLD:
                 # Get the top left x, top left y, buttom right x, buttom right y for the detection
                 r_t_x = int(detections[0, 0, people, 3] * frame.shape[1])
                 r_t_y = int(detections[0, 0, people, 4] * frame.shape[0])

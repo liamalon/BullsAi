@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-COLOR_THRESHOLD = 15
+COLOR_THRESHOLD = 12
 
 LOWER_RED = [155,25,0]
 

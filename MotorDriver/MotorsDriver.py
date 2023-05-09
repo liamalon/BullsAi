@@ -63,6 +63,8 @@ class MotorsDriver:
         returns:
             None
         """
+        if steps_tuple == (0,0):
+            return
         x_steps = steps_tuple[0]
         y_steps = steps_tuple[1]
         

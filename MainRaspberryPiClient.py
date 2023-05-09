@@ -168,6 +168,9 @@ class ImageTransfer:
 
                     except socket.timeout:
                         print("Socket timedout sending frame again...")
+                    
+                    except Exception as e:
+                        print(f"Got {e} \nBut resuming")
 
                 if self.gun_thread is not None:
                     self.gun_thread.join()

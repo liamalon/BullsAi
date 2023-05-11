@@ -13,7 +13,7 @@ class RSAEncryption:
         self.public_key, self.__private_key = rsa.newkeys(self.KEYS_LEN)
 
     @staticmethod
-    def encrypt_rsa(public_key: rsa.PublicKey, message: str) -> str:
+    def encrypt_rsa(public_key: rsa.PublicKey, message: str) -> bytes:
         """
         Encrypts message with the friends public key
         Args:
@@ -24,7 +24,7 @@ class RSAEncryption:
         """
         return rsa.encrypt(message.encode(), public_key)
 
-    def decrypt_rsa(self, message: str) -> str:
+    def decrypt_rsa(self, message: bytes) -> str:
         """
         Encrypts message with the friends public key
         Args:

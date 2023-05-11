@@ -3,15 +3,16 @@ import numpy as np
 from typing import Tuple
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from ObjectDetection.EnemyDetectionCv2.EnemyTargeting import EnemyTargeting
+from Security.Encryption import RSAEncryption
 import struct
 import cv2
 import time
 
 FPS_BATCH: int = 20
-ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 5
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 1
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-STEP_SIZE_THRESHOLD: int = 7 
+STEP_SIZE_THRESHOLD: int = 15 
 AUTO_SIZE_FIXER: int = 1
 
 class ImageDetection:
@@ -63,6 +64,8 @@ class ImageDetection:
         
         # Red shirt man bounding
         self.person_bounding = (0, 0, 0, 0, 0)
+
+        self.rsa_encryption = RSAEncryption()
 
     def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
@@ -199,7 +202,7 @@ class ImageDetection:
             steps_tuple = self.steps_thresholding(steps_tuple)
 
             steps_tuple = (int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER))
-            
+
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
@@ -252,10 +255,15 @@ class ImageDetection:
         """
         Handshake to start communication
         """
-        print("Waiting for start")
+        print("Waiting for RSA public key")
         code, data, addr = self.server.recv_msg()
-        print("Got start")
-        self.server.send_msg(b"HNDSH"+str(NUM_FRAMES_TO_DETECT).encode(), addr, False)
+
+        msg = "HNDSH"+str(NUM_FRAMES_TO_DETECT)
+
+        encrypted_msg  = self.rsa_encryption.encrypt_rsa(data, msg)
+
+        print("Sending encrypted msg")
+        self.server.send_msg(encrypted_msg, addr, False)
 
     def change_frame_rate(self, new_frame_rate: int = ORIGINNAL_NUM_FRAMES_TO_DETECT):
         """

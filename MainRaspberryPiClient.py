@@ -3,6 +3,7 @@ import threading
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from MotorDriver.MotorsDriver import MotorsDriver
+from Security.Encryption import RSAEncryption
 from GunHandler.GunHandler import Gun
 import numpy as np
 import struct
@@ -37,6 +38,7 @@ class ImageTransfer:
         self.steps = (0, 0)
         self.run = True
         self.alive = True
+        self.rsa_encryption = RSAEncryption()
     
     def encode_frame(self, frame: np.ndarray) -> np.ndarray:
         """
@@ -97,10 +99,11 @@ class ImageTransfer:
         Handshake to start communication
         """
         global NUM_FRAMES_TO_DETECT
-        # Send start code to server
-        self.udp_client.send_msg(b"HNDSH"+b"START", False)
 
-        print(f"Sent start to {self.udp_client.server_ip} , {self.udp_client.port}")
+        # Send start code to server
+        self.udp_client.send_msg(b"PBKEY"+self.rsa_encryption.public_key, False)
+
+        print(f"Sent public key to {self.udp_client.server_ip} , {self.udp_client.port}")
         
         # Reset socket timeout
         self.udp_client.socket.settimeout(None)
@@ -108,7 +111,7 @@ class ImageTransfer:
         # Recv ack from server
         code, data, addr = self.udp_client.recv_msg()
 
-        NUM_FRAMES_TO_DETECT = int(data.decode())
+        NUM_FRAMES_TO_DETECT = int(self.rsa_encryption.decrypt_rsa(data))
 
         print("Num frames changed to: ", NUM_FRAMES_TO_DETECT)
 

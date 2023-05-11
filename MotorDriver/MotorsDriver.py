@@ -56,7 +56,7 @@ class MotorsDriver:
             time.sleep(SLEEP_TIME)
 
     
-    def move_motors(self, steps_tuple: tuple=(0,0)) -> None:
+    def move_motors(self, steps_tuple: tuple=(0, 0)) -> None:
         """
         Moves both motors 
         args:
@@ -65,7 +65,7 @@ class MotorsDriver:
         returns:
             None
         """
-        if steps_tuple == (0,0):
+        if steps_tuple == (0, 0):
             return
         
         self.in_use = True
@@ -83,5 +83,6 @@ class MotorsDriver:
         # Waiting for them to end
         horizontal_thread.join()
         vertical_thread.join()
+        
         self.in_use = False
 

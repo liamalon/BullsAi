@@ -65,10 +65,10 @@ class MotorsDriver:
         returns:
             None
         """
-        self.in_use = True
         if steps_tuple == (0,0):
-            self.in_use = False
             return
+        
+        self.in_use = True
         
         x_steps = steps_tuple[0]
         y_steps = steps_tuple[1]

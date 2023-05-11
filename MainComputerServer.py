@@ -169,19 +169,19 @@ class ImageDetection:
             steps_tuple (tuple): num of steps, is none by defualt
         """
         if self.exit:
-                self.__send_exit()
-                return
-
-        if steps_tuple is None:
-            # Get num steps
-            steps_tuple = self.calc_num_steps()
-
-        # Threshold steps tuple
-        steps_tuple = self.steps_thresholding(steps_tuple)
-
-        steps_tuple = (int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER))
+            self.__send_exit()
+            return
         
         if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):            
+            if steps_tuple is None:
+                # Get num steps
+                steps_tuple = self.calc_num_steps()
+
+            # Threshold steps tuple
+            steps_tuple = self.steps_thresholding(steps_tuple)
+
+            steps_tuple = (int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER))
+
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'FIREG' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))
@@ -191,6 +191,15 @@ class ImageDetection:
 
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
+            if steps_tuple is None:
+                # Get num steps
+                steps_tuple = self.calc_num_steps()
+
+            # Threshold steps tuple
+            steps_tuple = self.steps_thresholding(steps_tuple)
+
+            steps_tuple = (int(steps_tuple[0] * AUTO_SIZE_FIXER), int(steps_tuple[1] * AUTO_SIZE_FIXER))
+            
             # Using struct to pack and send the tuple as bytes, len(steps_tuple) 
             # is for the number of elements and i is for their type (integer)
             msg = b'STEPS' + bytearray(struct.pack(f'{len(steps_tuple)}i', *steps_tuple))

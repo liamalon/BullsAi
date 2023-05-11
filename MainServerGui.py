@@ -75,6 +75,8 @@ class Gui(App):
     Main app
     """
     def build(self):
+        self.icon = "Graphics\\bullsAi.png"
+        self.title = "BullsAi"
         return window_manger
 
 def startApp():

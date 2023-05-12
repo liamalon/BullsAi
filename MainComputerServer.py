@@ -7,6 +7,7 @@ from Security.Encryption import RSAEncryption
 import struct
 import cv2
 import time
+import pickle
 
 FPS_BATCH: int = 20
 ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 1
@@ -258,9 +259,11 @@ class ImageDetection:
         print("Waiting for RSA public key")
         code, data, addr = self.server.recv_msg()
 
+        public_key = pickle.loads(data)
+
         msg = "HNDSH"+str(NUM_FRAMES_TO_DETECT)
 
-        encrypted_msg  = self.rsa_encryption.encrypt_rsa(data, msg)
+        encrypted_msg  = self.rsa_encryption.encrypt_rsa(public_key, msg)
 
         print("Sending encrypted msg")
         self.server.send_msg(encrypted_msg, addr, False)

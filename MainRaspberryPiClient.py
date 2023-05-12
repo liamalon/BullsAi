@@ -10,6 +10,7 @@ import struct
 import sys
 import socket
 import cv2
+import pickle
 
 FRAME_QUALITY = 15
 NUM_FRAMES_TO_DETECT = 10
@@ -100,8 +101,10 @@ class ImageTransfer:
         """
         global NUM_FRAMES_TO_DETECT
 
+        pickled_key = pickle.dumps(self.rsa_encryption.public_key)
+
         # Send start code to server
-        self.udp_client.send_msg(b"PBKEY"+self.rsa_encryption.public_key, False)
+        self.udp_client.send_msg(b"PBKEY"+pickled_key, False)
 
         print(f"Sent public key to {self.udp_client.server_ip} , {self.udp_client.port}")
         

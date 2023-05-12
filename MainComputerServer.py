@@ -10,11 +10,11 @@ import time
 import pickle
 
 FPS_BATCH: int = 20
-ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 1
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 2
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-STEP_SIZE_THRESHOLD: int = 15 
-AUTO_SIZE_FIXER: int = 1
+STEP_SIZE_THRESHOLD: int = 10 
+AUTO_SIZE_FIXER: int = 1.2
 
 class ImageDetection:
     """
@@ -261,9 +261,9 @@ class ImageDetection:
 
         public_key = pickle.loads(data)
 
-        msg = "HNDSH"+str(NUM_FRAMES_TO_DETECT)
+        msg = str(NUM_FRAMES_TO_DETECT)
 
-        encrypted_msg  = self.rsa_encryption.encrypt_rsa(public_key, msg)
+        encrypted_msg  = b"HNDSH"+self.rsa_encryption.encrypt_rsa(public_key, msg)
 
         print("Sending encrypted msg")
         self.server.send_msg(encrypted_msg, addr, False)

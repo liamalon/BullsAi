@@ -26,6 +26,8 @@ import time
 
 from Security.SecurityTools import hash_str, genrate_salt
 
+from DataBase.CodesDB import CodesDB
+
 SHOOT_BUTTON: int = 10 # R1
 
 PORT: int = 8888
@@ -33,8 +35,6 @@ CODE_LEN: int = 5
 STEP_SIZE: int = 1
 
 HUMAN_SIZE_FIXER: int = 2
-
-CODES: list = []
 
 LOCK: threading.Lock = threading.Lock()
 
@@ -55,6 +55,8 @@ class WindowManager(ScreenManager):
 window_manger = WindowManager()
 
 global_server = None
+
+global_db = CodesDB()
 
 def start_global_server():
     """
@@ -115,12 +117,12 @@ class EmailScreen(Screen):
         """
         Sends code to users email
         """
-        global CODES
+        global global_db
         code = self.generate_code()
         self.send_mail(code)
         LOCK.acquire()
         salt = genrate_salt()
-        CODES.append((hash_str(code+salt), salt))
+        global_db.insert_code(hash_str(code+salt), salt)
         LOCK.release()
 
     def send_mail(self, msg: str) -> None:
@@ -153,11 +155,12 @@ class CodeScreen(Screen):
         """
         Checks if code is valid
         """
-        for code, salt in CODES:
+        hashed_code = global_db.get_hashed_codes()
+        for salt, code in hashed_code:
             hashed_salt = hash_str(self.user_code.text + salt)
             if hashed_salt == code:
                 LOCK.acquire()
-                CODES.remove((code, salt))
+                global_db.deelte_code(code)
                 LOCK.release()
                 change_window("OptionsScreen")
                 return
@@ -424,7 +427,7 @@ screens = [
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "OptionsScreen"
+window_manger.current = "StartScreen"
 if __name__ == "__main__":
     startApp()
 

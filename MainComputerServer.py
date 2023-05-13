@@ -177,11 +177,12 @@ class ImageDetection:
             addr (tuple): addres of the client to send to
             steps_tuple (tuple): num of steps, is none by defualt
         """
-        if self.exit:
-            self.__send_exit()
-            return
-        
-        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)) or self.fire:            
+    
+        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)) or self.fire: 
+            if self.exit:
+                self.__send_exit()
+                return
+                      
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -205,6 +206,9 @@ class ImageDetection:
 
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
+            if self.exit:
+                self.__send_exit()
+                return
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -289,4 +293,3 @@ class ImageDetection:
         """
         global NUM_FRAMES_TO_DETECT_TO_FIRE
         NUM_FRAMES_TO_DETECT_TO_FIRE = new_fire_rate
-

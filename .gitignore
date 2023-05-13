@@ -1,5 +1,8 @@
-#ignore venv dir
-venv/
+#ignore server venv dir
+server_venv/
+
+#ignore client_venv dir
+client_venv/
 
 #ignore cam dir
 cam/

@@ -71,4 +71,18 @@ class UdpServer:
 
         data, address = self.socket.recvfrom(BUFF_SIZE)
         return data, address
+    
+    def flush_sock_buff(self) -> None:
+        """
+        Flushes the socket buff when changing between modes
+        """
+        while True:
+            try:
+                self.socket.settimeout(1)
+                data = self.socket.recvfrom(BUFF_SIZE)
+            except socket.timeout:
+                '''
+                When it reaches here it means there is no data in buff
+                '''
+                return
 

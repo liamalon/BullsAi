@@ -24,9 +24,8 @@ class Gun:
             if self.fire:
                 GPIO.output(RELAY_PIN, GPIO.HIGH)
                 time.sleep(SLEEP_TIME)
-            
-            else:
                 GPIO.output(RELAY_PIN, GPIO.LOW)
+                self.fire = False    
 
 if __name__ == "__main__":
     gn = Gun()

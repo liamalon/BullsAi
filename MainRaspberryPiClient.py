@@ -92,7 +92,7 @@ class ImageTransfer:
         """
         Fires the gun
         """
-        self.gun = True
+        self.gun.fire = True
 
     def handshake(self):
         """

@@ -13,12 +13,12 @@ FPS_BATCH: int = 20
 ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 2
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-STEP_SIZE_THRESHOLD: int = 10 
+STEP_SIZE_THRESHOLD: int = 12
 AUTO_SIZE_FIXER: int = 1.2
 
 class ImageDetection:
     """
-    ImageDetection class ia in charge of the detection of people 
+    ImageDetection class is in charge of the detection of people 
     in frames sent from the raspberrypi
     """
     

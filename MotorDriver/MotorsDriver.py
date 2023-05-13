@@ -3,7 +3,9 @@ import time
 import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
-SLEEP_TIME = 0.001
+
+SLEEP_TIME: float = 0.001
+PROCESS_TIMEOUT: int = 4
 
 class MotorsDriver:
     def __init__(self) -> None:
@@ -41,7 +43,6 @@ class MotorsDriver:
             self.horizontal_motor.onestep(direction=self.directions[backwards])
             # In order to help it as a result of an heavy whieght 
             time.sleep(SLEEP_TIME * 5)
-        print("hor finished")
 
 
     def move_vertical(self, num_steps:int, backwards=False) -> None:
@@ -56,7 +57,6 @@ class MotorsDriver:
         for step in range(num_steps):
             self.vertical_motor.onestep(direction=self.directions[backwards])
             time.sleep(SLEEP_TIME)
-        print("vertical finished")
 
     
     def move_motors(self, steps_tuple: tuple=(0, 0)) -> None:
@@ -78,15 +78,14 @@ class MotorsDriver:
         
         horizontal_thread = Process(target=self.move_horizontal, args=(abs(x_steps), x_steps < 0))
         vertical_thread = Process(target=self.move_vertical, args=(abs(y_steps), y_steps < 0))
-        print(f"Started {x_steps}, {y_steps}")
+
         # Starting new processes for each motor
         horizontal_thread.start()
         vertical_thread.start()
 
         # Waiting for them to end
-        horizontal_thread.join()
-        vertical_thread.join()
-        print("Finshed")
-        
+        horizontal_thread.join(timeout=PROCESS_TIMEOUT)
+        vertical_thread.join(timeout=PROCESS_TIMEOUT)
+
         self.in_use = False
 

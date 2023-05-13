@@ -1,5 +1,6 @@
 
 import threading
+from multiprocessing import Process
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from MotorDriver.MotorsDriver import MotorsDriver
@@ -92,7 +93,7 @@ class ImageTransfer:
         """
         Fires the gun
         """
-        self.gun_thread = threading.Thread(target=self.gun.fire)
+        self.gun_thread = Process(target=self.gun.fire)
         self.gun_thread.start()
 
     def handshake(self):

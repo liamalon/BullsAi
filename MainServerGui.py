@@ -427,7 +427,7 @@ screens = [
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "StartScreen"
+window_manger.current = "OptionsScreen"
 if __name__ == "__main__":
     startApp()
 

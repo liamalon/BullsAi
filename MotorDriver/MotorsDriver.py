@@ -41,10 +41,12 @@ class MotorsDriver:
             self.horizontal_motor.onestep(direction=self.directions[backwards])
             # In order to help it as a result of an heavy whieght 
             time.sleep(SLEEP_TIME * 5)
+        print("hor finished")
+
 
     def move_vertical(self, num_steps:int, backwards=False) -> None:
         """
-        Moves the vertical motor (motor number 1)
+        Moves the vertical motor (motor number 2)
         args:
             num_steps (int): number of steps to do
             backwards (bool): set to False by default but if true would move the other way
@@ -54,6 +56,7 @@ class MotorsDriver:
         for step in range(num_steps):
             self.vertical_motor.onestep(direction=self.directions[backwards])
             time.sleep(SLEEP_TIME)
+        print("vertical finished")
 
     
     def move_motors(self, steps_tuple: tuple=(0, 0)) -> None:
@@ -75,7 +78,7 @@ class MotorsDriver:
         
         horizontal_thread = Process(target=self.move_horizontal, args=(abs(x_steps), x_steps < 0))
         vertical_thread = Process(target=self.move_vertical, args=(abs(y_steps), y_steps < 0))
-
+        print(f"Started {x_steps}, {y_steps}")
         # Starting new processes for each motor
         horizontal_thread.start()
         vertical_thread.start()
@@ -83,6 +86,7 @@ class MotorsDriver:
         # Waiting for them to end
         horizontal_thread.join()
         vertical_thread.join()
+        print("Finshed")
         
         self.in_use = False
 

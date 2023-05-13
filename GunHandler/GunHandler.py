@@ -23,6 +23,7 @@ class Gun:
         while self.runnig:
             if self.fire:
                 GPIO.output(RELAY_PIN, GPIO.HIGH)
+                time.sleep(SLEEP_TIME)
             
             else:
                 GPIO.output(RELAY_PIN, GPIO.LOW)

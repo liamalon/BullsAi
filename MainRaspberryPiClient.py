@@ -35,6 +35,7 @@ class ImageTransfer:
         self.num_frames = 0
         self.motors_driver = MotorsDriver()
         self.gun = Gun()
+        self.gun_thread = None
         self.steps = (0, 0)
         self.run = True
         self.alive = True
@@ -91,7 +92,8 @@ class ImageTransfer:
         """
         Fires the gun
         """
-        self.gun.fire = True
+        self.gun_thread = threading.Thread(target=self.gun.fire)
+        self.gun_thread.start()
 
     def handshake(self):
         """
@@ -138,9 +140,6 @@ class ImageTransfer:
             motors_thread = threading.Thread(target=self.move_motors)
             motors_thread.start()
 
-            gun_thread = threading.Thread(target=self.gun.fire_gun)
-            gun_thread.start()
-
             # Set run to True in order to run the inside loop
             self.run = True
 
@@ -164,6 +163,8 @@ class ImageTransfer:
                             self.recv_steps(data)
 
                         elif code == b"FIREG":
+                            if self.gun_thread is not None:
+                                self.gun_thread.join()
                             self.recv_steps(data)
                             self.fire()
                         
@@ -177,11 +178,11 @@ class ImageTransfer:
                     except Exception as e:
                         print(f"Got {e} \nBut resuming")
 
+                if self.gun_thread is not None:
+                    self.gun_thread.join()
+
             # Avoid thread zombies 
             motors_thread.join()
-
-            self.gun.runnig = False
-            gun_thread.join()
 
 def main():
     udp_client = UdpClient(sys.argv[1], 8888, 5)

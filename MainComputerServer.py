@@ -10,11 +10,12 @@ import time
 import pickle
 
 FPS_BATCH: int = 20
-ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 2
+ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 1
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
-NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-STEP_SIZE_THRESHOLD: int = 12
-AUTO_SIZE_FIXER: int = 1.2
+NUM_FRAMES_TO_DETECT_TO_FIRE: int = ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE
+STEP_SIZE_THRESHOLD: int = 10
+AUTO_SIZE_FIXER: int = 1
 
 class ImageDetection:
     """
@@ -279,4 +280,13 @@ class ImageDetection:
         """
         global NUM_FRAMES_TO_DETECT
         NUM_FRAMES_TO_DETECT = new_frame_rate
+
+    def change_fire_rate(self, new_fire_rate: int = ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE):
+        """
+        Changes num of frames to send fire after
+        Args:
+            new_fire_rate: (int) - new fire rate
+        """
+        global NUM_FRAMES_TO_DETECT_TO_FIRE
+        NUM_FRAMES_TO_DETECT_TO_FIRE = new_fire_rate
 

@@ -22,7 +22,7 @@ from multiprocessing import shared_memory
 
 import subprocess
 
-import time
+import sys
 
 from Security.SecurityTools import hash_str, genrate_salt
 
@@ -229,6 +229,8 @@ class AutoControlScreen(Screen):
 
         global_server.change_frame_rate()
 
+        global_server.change_fire_rate()
+
         global_server.handshake()
 
         global_server.running = True
@@ -341,6 +343,17 @@ class HumanControlScreen(Screen):
         texture.blit_buffer(frame.tobytes(), colorfmt='bgr', bufferfmt='ubyte')
         self.img.texture = texture
 
+    def get_shared_mem(self):
+        """
+        Waiting until shared memory is intialized from the other proccess
+        """
+        while True:
+            try:
+                self.shm = shared_memory.ShareableList(name="controller_mem")  # TOO SLOW 
+                return
+            except:
+                pass
+
     def on_enter(self, *args):
         """
         When enters this screen this function is called 
@@ -354,6 +367,8 @@ class HumanControlScreen(Screen):
         start_global_server()
 
         global_server.change_frame_rate(1)
+
+        global_server.change_fire_rate(sys.maxsize)
                 
         global_server.handshake()
 
@@ -364,10 +379,7 @@ class HumanControlScreen(Screen):
 
         controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
 
-        # Give the shared memory time to set up
-        time.sleep(2)
-
-        self.shm = shared_memory.ShareableList(name="controller_mem")  # TOO SLOW 
+        self.get_shared_mem()
 
         # Start steps sending thread
         self.steps_thread = threading.Thread(target=self.send_steps)

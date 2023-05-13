@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 RELAY_PIN = 21
-SLEEP_TIME = 0.01
+SLEEP_TIME = 0.1
 
 class Gun:
     def __init__(self) -> None:

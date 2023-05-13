@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 class CodesDB():
     def __init__(self):
@@ -21,15 +22,13 @@ class CodesDB():
         """
         Initalize the database
         """
-        try:
+        if not os.path.exists('DataBase\\codes_table.db'):
             # Create codes database
             self.current.execute(f"""CREATE TABLE {self.table_name }(
                 salt text,
                 hashed_code text PRIMARY KEY)""")
 
-        except:
-            pass
-        
+
     def close_DB(self):
         """
         Closes databse

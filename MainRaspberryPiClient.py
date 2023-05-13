@@ -108,6 +108,9 @@ class ImageTransfer:
 
         print(f"Sent public key to {self.udp_client.server_ip} , {self.udp_client.port}")
         
+        # Flushes socket buffer
+        self.udp_client.flush_sock_buff()
+
         # Reset socket timeout
         self.udp_client.socket.settimeout(None)
 

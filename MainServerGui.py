@@ -160,7 +160,7 @@ class CodeScreen(Screen):
             hashed_salt = hash_str(self.user_code.text + salt)
             if hashed_salt == code:
                 LOCK.acquire()
-                global_db.deelte_code(code)
+                global_db.delete_code(code)
                 LOCK.release()
                 change_window("OptionsScreen")
                 return

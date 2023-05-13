@@ -76,7 +76,7 @@ class CodesDB():
             print("File Already exits!")
             self.close_DB()
 
-    def deelte_code(self, hashed_code: str) -> None:
+    def delete_code(self, hashed_code: str) -> None:
         """
         Deletes a code
         Args:

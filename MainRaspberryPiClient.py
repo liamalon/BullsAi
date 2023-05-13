@@ -101,15 +101,15 @@ class ImageTransfer:
         """
         global NUM_FRAMES_TO_DETECT
 
+        # Flushes socket buffer
+        self.udp_client.flush_sock_buff()
+
         pickled_key = pickle.dumps(self.rsa_encryption.public_key)
 
         # Send start code to server
         self.udp_client.send_msg(b"PBKEY"+pickled_key, False)
 
         print(f"Sent public key to {self.udp_client.server_ip} , {self.udp_client.port}")
-        
-        # Flushes socket buffer
-        self.udp_client.flush_sock_buff()
 
         # Reset socket timeout
         self.udp_client.socket.settimeout(None)

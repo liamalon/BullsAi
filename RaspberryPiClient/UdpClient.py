@@ -88,6 +88,7 @@ class UdpClient:
         while True:
             try:
                 self.socket.settimeout(1)
+                print("Here")
                 self.socket.recvfrom(BUFF_SIZE)
             except socket.timeout:
                 '''

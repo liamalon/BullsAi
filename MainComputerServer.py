@@ -66,7 +66,11 @@ class ImageDetection:
         # Red shirt man bounding
         self.person_bounding = (0, 0, 0, 0, 0)
 
+        # Handels rsa encryption
         self.rsa_encryption = RSAEncryption()
+
+        # Handels fire when in human mode
+        self.fire = False
 
     def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
@@ -176,7 +180,7 @@ class ImageDetection:
             self.__send_exit()
             return
         
-        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)):            
+        if not (self.num_frames % (NUM_FRAMES_TO_DETECT * NUM_FRAMES_TO_DETECT_TO_FIRE)) or self.fire:            
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()
@@ -192,6 +196,11 @@ class ImageDetection:
 
             # Send
             self.server.send_msg(msg, addr, False)
+
+            # If fire is on turn it off
+            if self.fire:
+                print("Fired!")
+                self.fire = False
 
         # Check if time to send ai detection
         elif not (self.num_frames % NUM_FRAMES_TO_DETECT):
@@ -211,17 +220,11 @@ class ImageDetection:
             # Send
             self.server.send_msg(msg, addr, False)
     
-    def send_fire(self, addr: tuple) -> None:
+    def send_fire(self) -> None:
         """
         Sends fire to the client
-
-        Args:
-            addr (tuple): addres of the client to send to
         """
-        msg = b'FIREG' + bytearray(struct.pack(f'{len((0, 0))}i', *(0, 0)))
-
-        # Send
-        self.server.send_msg(msg, addr, False)
+        self.fire = True
     
     def send_exit(self) -> None:
         """

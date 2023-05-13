@@ -233,6 +233,8 @@ class AutoControlScreen(Screen):
 
         global_server.running = True
 
+        global_server.fire = False
+
         # Pop up
         server_up_popup()
 
@@ -295,21 +297,17 @@ class HumanControlScreen(Screen):
                 steps_horizntal, steps_vertical = self.shm[0], self.shm[1]
                 steps_horizntal, steps_vertical = (self.shm[0] ** HUMAN_SIZE_FIXER) * (-1 if steps_horizntal < 0 else 1), (self.shm[1] ** HUMAN_SIZE_FIXER) * (-1 if steps_vertical < 0 else 1)
                 self.move(steps_horizntal, steps_vertical, addr)
-                self.shot(addr)
+                self.shot()
                 global_server.addr = addr
             except Exception as e:
                 print("Got exception: ", e)
             
-    def shot(self, addr: tuple):
+    def shot(self):
         """
         When R1 is preesed send the client an order to shot
-        
-        Args:
-            addr (tuple): address of the client
         """
         if self.shm[2] == 1:
-            global_server.send_fire(addr)
-            print("Fire!")
+            global_server.send_fire()
 
     def move(self, steps_horizntal: int, steps_vertical: int, addr: tuple):
         """

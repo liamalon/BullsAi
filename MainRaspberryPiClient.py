@@ -1,5 +1,5 @@
 
-import multiprocessing
+import threading
 from RaspberryPiClient.UdpClient import UdpClient
 from ObjectDetection.EnemyDetectionCv2.EnemyDetection import EnemyDetection
 from MotorDriver.MotorsDriver import MotorsDriver
@@ -92,7 +92,7 @@ class ImageTransfer:
         """
         Fires the gun
         """
-        self.gun_thread = multiprocessing.Process(target=self.gun.fire)
+        self.gun_thread = threading.Thread(target=self.gun.fire)
         self.gun_thread.start()
 
     def handshake(self):
@@ -137,7 +137,7 @@ class ImageTransfer:
             self.handshake()
 
             # Motors moving thread
-            motors_thread = multiprocessing.Process(target=self.move_motors)
+            motors_thread = threading.Thread(target=self.move_motors)
             motors_thread.start()
 
             # Set run to True in order to run the inside loop

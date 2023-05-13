@@ -7,7 +7,7 @@ SIZE_HEADER_FORMAT = "000000000|"
 LEN_SIZE_HEADER = len(SIZE_HEADER_FORMAT) 
 
 # Bool for debugging
-UDP_DEBUG = True 
+UDP_DEBUG = False 
 
 # Max len to print
 LEN_TO_PRINT = 100

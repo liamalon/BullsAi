@@ -86,7 +86,7 @@ class ImageTransfer:
         """
         while self.run:
             print("running")
-            if not self.motors_driver.in_use:
+            if not self.motors_driver.in_use and self.steps != (0, 0):
                 self.motors_driver.move_motors(self.steps)
         self.motors_driver.in_use = False
         self.motors_driver.__del__()

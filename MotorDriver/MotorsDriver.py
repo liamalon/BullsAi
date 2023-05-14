@@ -69,9 +69,7 @@ class MotorsDriver:
             None
         """
         print("Moving")
-        if steps_tuple == (0, 0):
-            return
-        
+                
         self.in_use = True
         
         x_steps = steps_tuple[0]

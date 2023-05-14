@@ -68,6 +68,7 @@ class MotorsDriver:
         returns:
             None
         """
+        print("Moving")
         if steps_tuple == (0, 0):
             return
         

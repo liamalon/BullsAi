@@ -85,7 +85,6 @@ class ImageTransfer:
             None
         """
         while self.run:
-            print("running")
             if not self.motors_driver.in_use and self.steps != (0, 0):
                 self.motors_driver.move_motors(self.steps)
         self.motors_driver.in_use = False
@@ -142,12 +141,12 @@ class ImageTransfer:
             # Handshake with server
             self.handshake()
 
+            # Set run to True in order to run the inside loop
+            self.run = True
+
             # Motors moving thread
             motors_thread = threading.Thread(target=self.move_motors)
             motors_thread.start()
-
-            # Set run to True in order to run the inside loop
-            self.run = True
 
             # Second loop is for the communication itself
             while self.run:

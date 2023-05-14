@@ -67,9 +67,7 @@ class MotorsDriver:
             [if x/y steps negetive would move in the other way]
         returns:
             None
-        """
-        print("Moving")
-                
+        """                
         self.in_use = True
         
         x_steps = steps_tuple[0]

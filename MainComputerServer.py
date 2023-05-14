@@ -209,6 +209,7 @@ class ImageDetection:
             if self.exit:
                 self.__send_exit()
                 return
+            
             if steps_tuple is None:
                 # Get num steps
                 steps_tuple = self.calc_num_steps()

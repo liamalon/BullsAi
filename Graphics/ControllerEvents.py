@@ -92,10 +92,10 @@ class ControllerEvents:
         Creates a shared memory list
         """
         try:
-            self.shared_list = shared_memory.ShareableList([0,0,0], name="controller_mem")
+            self.shared_list = shared_memory.ShareableList([0 ,0, 0], name="controller_mem")
         except:
             print("Shared memory already exists, resuming...")
-            
+
     def use_shm(self, name: str):
         """
         Uses an existing shared memory list and reads from it

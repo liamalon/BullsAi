@@ -40,6 +40,8 @@ LOCK: threading.Lock = threading.Lock()
 
 YELLOW: tuple = (0, 255, 255)
 
+CONTROLLER_THREAD: threading.Thread = None
+
 # Load font 
 LabelBase.register(name= "txt_font",
     fn_regular= "Graphics\\assets\\font.ttf")
@@ -363,6 +365,7 @@ class HumanControlScreen(Screen):
         Returns:
             None
         """
+        global CONTROLLER_THREAD
 
         start_global_server()
 
@@ -377,7 +380,8 @@ class HumanControlScreen(Screen):
         # Pop up
         server_up_popup()
 
-        controller_proc = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
+        if CONTROLLER_THREAD is None:
+            CONTROLLER_THREAD = subprocess.Popen(["python","Graphics\\ControllerEvents.py"])
 
         self.get_shared_mem()
 

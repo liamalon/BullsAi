@@ -11,6 +11,7 @@ import sys
 import socket
 import cv2
 import pickle
+import time
 
 FRAME_QUALITY = 15
 NUM_FRAMES_TO_DETECT = 10
@@ -87,6 +88,9 @@ class ImageTransfer:
         while self.run:
             if not self.motors_driver.in_use and self.steps != (0, 0):
                 self.motors_driver.move_motors(self.steps)
+            # To put the while in waiting sometimes
+            time.sleep(0.001)
+            
         self.motors_driver.in_use = False
         self.motors_driver.__del__()
 

@@ -8,6 +8,7 @@ class CodesDB():
         self.table_name = "codes_table"
         self.open_DB()
         self.init_db()
+        self.close_DB()
         
     def open_DB(self) -> None:
         """
@@ -22,12 +23,12 @@ class CodesDB():
         """
         Initalize the database
         """
-        if not os.path.exists('DataBase\\codes_table.db'):
+        self.current.execute(f"SELECT count(name) FROM sqlite_master WHERE type='table' AND name='{self.table_name}'")
+        if self.current.fetchone()[0] < 1:
             # Create codes database
             self.current.execute(f"""CREATE TABLE {self.table_name }(
                 salt text,
                 hashed_code text PRIMARY KEY)""")
-
 
     def close_DB(self):
         """
@@ -67,7 +68,7 @@ class CodesDB():
         self.open_DB()
         sql=f"SELECT EXISTS(SELECT 1 FROM {self.table_name} WHERE hashed_code='{hashed_code}')"
         check = self.current.execute(sql) 
-        if check.fetchone()[0]==0:
+        if check.fetchone()[0] == 0:
             sql = f"INSERT INTO {self.table_name} VALUES ('{salt}', '{hashed_code}');"
             res=self.current.execute(sql)
             self.commit()

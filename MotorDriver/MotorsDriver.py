@@ -4,8 +4,8 @@ import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
 
-SLEEP_TIME: float = 0.001
-PROCESS_TIMEOUT: int = 2
+SLEEP_TIME: float = 0.0006
+PROCESS_TIMEOUT: int = 1
 
 class MotorsDriver:
     def __init__(self) -> None:

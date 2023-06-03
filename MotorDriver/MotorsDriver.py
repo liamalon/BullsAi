@@ -4,7 +4,7 @@ import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
 
-SLEEP_TIME: float = 0.0006
+SLEEP_TIME: float = 0
 PROCESS_TIMEOUT: int = 1
 
 class MotorsDriver:
@@ -19,6 +19,7 @@ class MotorsDriver:
         self.directions = [stepper.FORWARD, stepper.BACKWARD]
         self.released = False
         self.in_use = False
+        self.style = stepper.DOUBLE
 
     def __del__(self):
         """
@@ -40,9 +41,9 @@ class MotorsDriver:
             None
         """
         for step in range(num_steps):
-            self.horizontal_motor.onestep(direction=self.directions[backwards])
+            self.horizontal_motor.onestep(direction=self.directions[backwards], style=self.style)
             # In order to help it as a result of an heavy whieght 
-            time.sleep(SLEEP_TIME * 5)
+            # time.sleep(SLEEP_TIME * 5)
 
 
     def move_vertical(self, num_steps:int, backwards=False) -> None:
@@ -55,8 +56,8 @@ class MotorsDriver:
             None
         """
         for step in range(num_steps):
-            self.vertical_motor.onestep(direction=self.directions[backwards])
-            time.sleep(SLEEP_TIME)
+            self.vertical_motor.onestep(direction=self.directions[backwards], style=self.style)
+            # time.sleep(SLEEP_TIME)
 
     
     def move_motors(self, steps_tuple: tuple=(0, 0)) -> None:

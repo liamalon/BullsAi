@@ -11,11 +11,14 @@ import pickle
 
 FPS_BATCH: int = 20
 ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 1
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 2
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE
-STEP_SIZE_THRESHOLD: int = 10
+STEP_SIZE_THRESHOLD: int = 30
 AUTO_SIZE_FIXER: int = 1
+SMALL_STEPS_IN_A_ROW: int = 3
+MAX_HEIGHT: int = 40
+ADD_VERTICAL: int = 10
 
 class ImageDetection:
     """
@@ -32,10 +35,10 @@ class ImageDetection:
             step_size (int): how much is a step
         """
         # Initalizng the server in the class
-        self.server = server
+        self.server: UdpServer = server
 
         # The frame it self
-        self.frame = None
+        self.frame: np.ndarray = None
 
         # Init the enemy detector
         self.enemy_detector = EnemyDetection()
@@ -44,16 +47,16 @@ class ImageDetection:
         self.enemy_targeting = EnemyTargeting(step_size)
 
         # Get width of window
-        self.window_width = self.enemy_detector.camera.get(3) 
+        self.window_width: int = self.enemy_detector.camera.get(3) 
 
         # Get height of window
-        self.window_height = self.enemy_detector.camera.get(4)
+        self.window_height: int = self.enemy_detector.camera.get(4)
 
         # Num frames got in evey second
-        self.num_frames = 0
+        self.num_frames: int = 0
 
         # Start timer to get every second
-        self.start = time.time()
+        self.start: float = time.time()
 
         # Indicates if the server is running or not
         self.running = True
@@ -62,16 +65,22 @@ class ImageDetection:
         self.addr = None
 
         # Exit connection or not
-        self.exit = False
+        self.exit: bool = False
         
         # Red shirt man bounding
-        self.person_bounding = (0, 0, 0, 0, 0)
+        self.person_bounding: tuple = (0, 0, 0, 0, 0)
 
         # Handels rsa encryption
         self.rsa_encryption = RSAEncryption()
 
         # Handels fire when in human mode
-        self.fire = False
+        self.fire: bool = False
+
+        # Checks amount of small steps
+        self.small_steps_counter: int = 0  
+
+        # When the person is to big we want to go a little over
+        self.add_vertical: int = 0
 
     def set_frame(self, data: bytes, show_frame: bool = False, show_fps: bool = False) -> None:
         """
@@ -148,6 +157,10 @@ class ImageDetection:
         if person != ():
             # Divide the width and height by 2 
             # in order to get the center of the screen
+            if person[1] < MAX_HEIGHT: # Check
+                self.add_vertical = ADD_VERTICAL # Check
+            else: # Check
+                self.add_vertical = 0 # Check
             self.person_bounding = person
             return self.enemy_targeting.get_steps_to_people_center(self.window_width // 2, self.window_height // 2, person)
         self.person_bounding = (0, 0, 0, 0, 0)
@@ -165,8 +178,17 @@ class ImageDetection:
         """
         x_steps = 0 if abs(steps_tuple[0]) < STEP_SIZE_THRESHOLD else steps_tuple[0]
         y_steps = 0 if abs(steps_tuple[1]) < STEP_SIZE_THRESHOLD else steps_tuple[1]
-        
-        return (x_steps, y_steps)
+        if not all((x_steps, y_steps)):
+            print("Shouls send small steps: ", steps_tuple[0], steps_tuple[1], self.small_steps_counter)
+            if (self.small_steps_counter < SMALL_STEPS_IN_A_ROW):
+                # print("Steps: ", steps_tuple, "small steps counter: ", self.small_steps_counter)
+                self.small_steps_counter += 1
+                return (steps_tuple[0], steps_tuple[1] + self.add_vertical)
+            # print("Too many small steps: ", steps_tuple, "small steps counter: ", self.small_steps_counter)
+            return (x_steps, y_steps + self.add_vertical)
+        # print("No small steps: ", steps_tuple, "small steps counter: ", self.small_steps_counter)
+        self.small_steps_counter = 0 
+        return (x_steps, y_steps + self.add_vertical)
 
     def send_steps(self, addr: tuple, steps_tuple: tuple = None) -> None:
         """

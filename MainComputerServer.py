@@ -11,14 +11,14 @@ import pickle
 
 FPS_BATCH: int = 20
 ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE: int = 60
-ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 2
+ORIGINNAL_NUM_FRAMES_TO_DETECT: int = 4
 NUM_FRAMES_TO_DETECT: int = ORIGINNAL_NUM_FRAMES_TO_DETECT
 NUM_FRAMES_TO_DETECT_TO_FIRE: int = ORIGINNAL_NUM_FRAMES_TO_DETECT_TO_FIRE
-STEP_SIZE_THRESHOLD: int = 30
+STEP_SIZE_THRESHOLD: int = 35
 AUTO_SIZE_FIXER: int = 1
-SMALL_STEPS_IN_A_ROW: int = 3
+SMALL_STEPS_IN_A_ROW: int = 2
 MAX_HEIGHT: int = 40
-ADD_VERTICAL: int = 10
+ADD_VERTICAL: int = 0
 
 class ImageDetection:
     """
@@ -68,7 +68,7 @@ class ImageDetection:
         self.exit: bool = False
         
         # Red shirt man bounding
-        self.person_bounding: tuple = (0, 0, 0, 0, 0)
+        self.person_bounding: tuple = (-1, ) * 5
 
         # Handels rsa encryption
         self.rsa_encryption = RSAEncryption()
@@ -157,13 +157,13 @@ class ImageDetection:
         if person != ():
             # Divide the width and height by 2 
             # in order to get the center of the screen
-            if person[1] < MAX_HEIGHT: # Check
+            if person[1] < MAX_HEIGHT and person[1] != -1 and not self.add_vertical: # Check
                 self.add_vertical = ADD_VERTICAL # Check
             else: # Check
                 self.add_vertical = 0 # Check
             self.person_bounding = person
             return self.enemy_targeting.get_steps_to_people_center(self.window_width // 2, self.window_height // 2, person)
-        self.person_bounding = (0, 0, 0, 0, 0)
+        self.person_bounding = (-1, ) * 5
         # If there isnt a person it should'nt move
         return (0, 0)       
     
@@ -179,7 +179,7 @@ class ImageDetection:
         x_steps = 0 if abs(steps_tuple[0]) < STEP_SIZE_THRESHOLD else steps_tuple[0]
         y_steps = 0 if abs(steps_tuple[1]) < STEP_SIZE_THRESHOLD else steps_tuple[1]
         if not all((x_steps, y_steps)):
-            print("Shouls send small steps: ", steps_tuple[0], steps_tuple[1], self.small_steps_counter)
+            # print("Shouls send small steps: ", steps_tuple[0], steps_tuple[1], self.small_steps_counter)
             if (self.small_steps_counter < SMALL_STEPS_IN_A_ROW):
                 # print("Steps: ", steps_tuple, "small steps counter: ", self.small_steps_counter)
                 self.small_steps_counter += 1

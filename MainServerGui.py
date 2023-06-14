@@ -441,14 +441,6 @@ screens = [
 for screen in screens:
     window_manger.add_widget(screen)
 
-window_manger.current = "OptionsScreen"
+window_manger.current = "StartScreen"
 if __name__ == "__main__":
     startApp()
-
-
-# TOFIX : filter low steps (20 and above) 
-# TOFIX: check if async moving motors works
-# TOFIX: way client stopping when shoting
-# TODO: change consst when human control
-# TODO: add com=nst to auto control
-# TOFIX: change time to recive steps

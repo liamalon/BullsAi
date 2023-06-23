@@ -1,5 +1,6 @@
 #ignore server venv dir
 server_venv/
+venv/
 
 #ignore client_venv dir
 client_venv/

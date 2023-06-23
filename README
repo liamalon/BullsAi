@@ -1,0 +1,67 @@
+Main Computer - 
+  step 1:
+    git clone https://github.com/liamalon/BullsAi
+  
+  step 2:
+    go into BullsAi
+
+  step 3:
+    pip install -r server-requirments.txt
+  
+  step 4: 
+    connect ps4 controller via bluetooth (if new device press ps4 button + share + options until light blinking lights)
+  
+  step 5:
+    run MainServerGui.py 
+
+  step 6:
+    enter mail
+
+  step 7:
+    check code in mail
+
+  step 8:
+    enter code
+
+  step 9:
+    select mode
+
+  step 10:
+    run RaspberyPI step 5
+  
+  step 11:
+    when switching modes need to do it very fast because the rp sends a RSA key as fast as possiable
+ 
+RaspberyPI-
+  importent notes:
+    oil the surfce between the base and the wheelbering  (x and y axis)
+
+    orange wire - pin 21
+    purple wire - 5V
+    grey wire - GND
+
+    check that everything is connected properly 
+
+    after runing the client on the raspberrypi check that you can move the wheelberings (could be locked)
+
+    if locked:
+      python3 ../motors_final.py 0 0 
+
+  step 1: 
+    put up hotspot - 
+    name: Alon
+    password: 0542376048
+
+  step 2:
+    power up the raspberrypi 
+
+  step 3:
+    ssh liam@liampi
+    030405
+
+  step 4:
+    cd Desktop/BullsAi
+
+  step 5:
+    python3 MainRaspberryPiClient.py <computer ip>
+  

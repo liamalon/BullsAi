@@ -106,8 +106,8 @@ class EmailScreen(Screen):
     Gets user mail and sens a code to the mail
     """
     user_mail = ObjectProperty(None)
-    email_login = "cyber.ophir@gmail.com"
-    password_login = "xOMyL2qaJ0tAPKZ7"
+    email_login = "mail@gmail.com"
+    password_login = "password"
 
     def generate_code(self) -> str:
         """
